@@ -15,4 +15,21 @@ class Voter(models.Model):
     
     def __str__(self):
         return f"{self.name} - {self.student_id}"
+    
+    class Election(models.Model):
+        election_id = models.AutoField(primary_key=True)
+        title = models.CharField(max_length=100)
+        description = models.TextField()
+        start_date = models.DateTimeField()
+        end_date = models.DateTimeField()
+        is_active = models.BooleanField()
+
+        def __str__(self):
+            return self.title
+        
+        @property
+        def is_ongoing(self):
+            now = timezone.now()
+            return self.stat_date <= now <= self.end_date
+        
 
