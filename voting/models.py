@@ -2,15 +2,15 @@ from django.db import models
 from django.utils import timezone
 
 class Voter(models.Model):
-    voter_id = models.AutoField(primary_key=True)  # Automatically generated unique ID
-    name = models.CharField(max_length=100)        # Student's name
-    email = models.EmailField(unique=True)         # Unique email for each voter
-    mobile_number = models.CharField(max_length=15, blank=True, null=True)  # Optional mobile number
-    student_id = models.CharField(max_length=20, unique=True)  # Unique ID issued by the college
-    password = models.CharField(max_length=100)    # Hashed password for authentication
-    department = models.CharField(max_length=100)  # Department name
-    is_verified = models.BooleanField(default=False)  # Verification status
-    has_voted = models.BooleanField(default=False)    # Voting status
+    voter_id = models.AutoField(primary_key=True) 
+    name = models.CharField(max_length=100)      
+    email = models.EmailField(unique=True)       
+    mobile_number = models.CharField(max_length=15, blank=True, null=True) 
+    student_id = models.CharField(max_length=20, unique=True) 
+    password = models.CharField(max_length=100)    
+    department = models.CharField(max_length=100)  
+    is_verified = models.BooleanField(default=False)  
+    has_voted = models.BooleanField(default=False)    
     created_at = models.DateTimeField(auto_now_add=True)
     
 class Candidate(models.Model):
@@ -42,7 +42,7 @@ class Election(models.Model):
     @property
     def is_ongoing(self):
         now = timezone.now()
-        return self.stat_date <= now <= self.end_date
+        return self.start_date <= now <= self.end_date
         
 
 class Vote(models.Model ):
@@ -53,7 +53,9 @@ class Vote(models.Model ):
     timestamp = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('voter', 'election')
+         constraints = [
+            models.UniqueConstraint(fields=['voter', 'election'], name='unique_vote_per_election')
+        ]
 
     def __str__(self):
         return f"vote by {self.voter} for {self.candidate}"
