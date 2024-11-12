@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.hashers import check_password
 from .models import Voter
 
-def voter_login(request)
+def voter_login(request):
     if request.method == 'POST':
         student_id = request.POST['student_id']
         password = request.POST['password']
@@ -16,7 +16,7 @@ def voter_login(request)
                 messages.error(request, 'Invalid password')
         except Voter.DoesNotExist:
             messages.error(request, 'Voter not found')
-    return rende(request, 'voter_login.html')
+    return render(request, 'voter_login.html')
 
 def home(request):
     return render(request, 'voting/home.html')
