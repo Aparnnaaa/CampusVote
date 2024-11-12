@@ -12,6 +12,15 @@ class Voter(models.Model):
     is_verified = models.BooleanField(default=False)  
     has_voted = models.BooleanField(default=False)    
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.password = make_password(self.password)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
     
 class Candidate(models.Model):
     candidate_id = models.AutoField(primary_key=True) 
