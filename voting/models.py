@@ -2,8 +2,6 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.hashers import make_password
 
-
-
 class Voter(models.Model):
     voter_id = models.AutoField(primary_key=True) 
     name = models.CharField(max_length=100)      

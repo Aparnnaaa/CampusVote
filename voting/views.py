@@ -18,8 +18,8 @@ def voter_login(request):
             messages.error(request, 'Voter not found')
     return render(request, 'voter_login.html')
 
-def home(request):
-    return render(request, 'voting/home.html')
+# def home(request):
+#     return render(request, 'voting/home.html')
 
 def voter_dashboard(request):
     voter_id = request.session.get('voter_id')
