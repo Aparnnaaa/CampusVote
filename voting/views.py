@@ -20,3 +20,11 @@ def voter_login(request):
 
 def home(request):
     return render(request, 'voting/home.html')
+
+def voter_dashboard(request):
+    voter_id = request.session.get('voter_id')
+    if not voter_id:
+        return redirect('voter_login')
+    voter = Voter.objects.get(voter_id=voter_id)
+    return render(request,'voter_dashboard.html',{'voter': voter})
+
