@@ -28,3 +28,8 @@ def voter_dashboard(request):
     voter = Voter.objects.get(voter_id=voter_id)
     return render(request,'voter_dashboard.html',{'voter': voter})
 
+def voter_logout(request):
+    request.session.flush()  # Clear session data
+    return redirect('voter_login')
+
+
