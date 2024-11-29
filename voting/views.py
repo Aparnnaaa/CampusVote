@@ -1,7 +1,8 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.hashers import check_password
 from .models import Voter
+
 
 def voter_login(request):
     if request.method == 'POST':
@@ -21,15 +22,15 @@ def voter_login(request):
 # def home(request):
 #     return render(request, 'voting/home.html')
 
+
 def voter_dashboard(request):
     voter_id = request.session.get('voter_id')
     if not voter_id:
         return redirect('voter_login')
     voter = Voter.objects.get(voter_id=voter_id)
-    return render(request,'voter_dashboard.html',{'voter': voter})
+    return render(request, 'voter_dashboard.html', {'voter': voter})
+
 
 def voter_logout(request):
     request.session.flush()  # Clear session data
     return redirect('voter_login')
-
-
