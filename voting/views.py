@@ -5,6 +5,10 @@ from .models import Voter
 
 
 def voter_login(request):
+
+    if request.session.get("voter_id"):
+        return redirect('voter_dashboard')
+
     if request.method == 'POST':
         student_id = request.POST['student_id']
         password = request.POST['password']
@@ -18,9 +22,6 @@ def voter_login(request):
         except Voter.DoesNotExist:
             messages.error(request, 'Voter not found')
     return render(request, 'voter_login.html')
-
-# def home(request):
-#     return render(request, 'voting/home.html')
 
 
 def voter_dashboard(request):
