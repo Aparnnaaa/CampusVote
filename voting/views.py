@@ -1,7 +1,7 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.hashers import check_password
-from .models import Voter
+from .models import Voter, Election, Candidate
 
 
 def voter_login(request):
@@ -35,3 +35,14 @@ def voter_dashboard(request):
 def voter_logout(request):
     request.session.flush()  # Clear session data
     return redirect('voter_login')
+
+
+def elections_list(request):
+    ongoing_elections = Election.objects.filter(is_active=True)
+    return render(request, 'elections_list.html', {'elections': ongoing_elections})
+
+
+def election_details(request, election_id):
+    election = get_object_or_404(election, pk=election_id)
+    candidates = election.candidates.all()
+    return render(request, 'election_details.html', {'election': election, 'candidates': candidates})

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Ongoing Elections</title>
+  </head>
+  <body>
+    <h1>Ongoing Elections</h1>
+    <ul>
+      {% for election in elections %}
+      <li>
+        <a href="{% url 'election_details' election.id %}"
+          >{{ election.title }}</a
+        >
+        <p>{{ election.description }}</p>
+      </li>
+      {% endfor %}
+    </ul>
+  </body>
+</html>
