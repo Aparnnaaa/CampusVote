@@ -43,6 +43,6 @@ def elections_list(request):
 
 
 def election_details(request, election_id):
-    election = get_object_or_404(election, pk=election_id)
+    election = get_object_or_404(Election, pk=election_id)
     candidates = election.candidates.all()
     return render(request, 'election_details.html', {'election': election, 'candidates': candidates})
