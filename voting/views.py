@@ -1,3 +1,4 @@
+from .utils import voter_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.hashers import check_password
@@ -24,6 +25,7 @@ def voter_login(request):
     return render(request, 'voter_login.html')
 
 
+@voter_required
 def voter_dashboard(request):
     voter_id = request.session.get('voter_id')
     if not voter_id:
@@ -32,16 +34,19 @@ def voter_dashboard(request):
     return render(request, 'voter_dashboard.html', {'voter': voter})
 
 
+@voter_required
 def voter_logout(request):
     request.session.flush()  # Clear session data
     return redirect('voter_login')
 
 
+@voter_required
 def elections_list(request):
     ongoing_elections = Election.objects.filter(is_active=True)
     return render(request, 'elections_list.html', {'elections': ongoing_elections})
 
 
+@voter_required
 def election_details(request, election_id):
     election = get_object_or_404(Election, pk=election_id)
     candidates = election.candidates.all()
