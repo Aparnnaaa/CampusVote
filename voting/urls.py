@@ -8,4 +8,6 @@ urlpatterns = [
     path('dashboard/elections/', views.elections_list, name='elections_list'),
     path('dashboard/elections/<int:election_id>/',
          views.election_details, name='election_details'),
+    path('elections/<int:election_id>/vote/',
+         views.cast_vote, name='cast_vote'),
 ]

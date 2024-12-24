@@ -5,14 +5,25 @@
   </head>
   <body>
     <h1>{{ election.title }}</h1>
+    <p>{{ election.description}}</p>
+    <h2>Available Candidates</h2>
     <form method="POST">
       {% csrf_token %} {% for candidaet in election.candidates.all %}
       <label>
         <input type="radio" name="candidate_id" value="{{ candidate.id }}" />
         {{ candidate.name }} - {{ candidate.position }} </label
       ><br />
+
       {% endfor %}
+      <br />
       <button type="submit">Submit Vote</button>
     </form>
+    {% if messages %}
+    <ul>
+      {% for message in messages %}
+      <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
   </body>
 </html>
