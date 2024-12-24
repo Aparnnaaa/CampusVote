@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Vote in {{ election.html }}</title>
+  </head>
+  <body>
+    <h1>{{ election.title }}</h1>
+    <form method="POST">
+      {% csrf_token %} {% for candidaet in election.candidates.all %}
+      <label>
+        <input type="radio" name="candidate_id" value="{{ candidate.id }}" />
+        {{ candidate.name }} - {{ candidate.position }} </label
+      ><br />
+      {% endfor %}
+      <button type="submit">Submit Vote</button>
+    </form>
+  </body>
+</html>
