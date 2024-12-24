@@ -58,21 +58,25 @@ def election_details(request, election_id):
 @login_required
 def cast_vote(request, election_id):
     voter = request.user
-    election = get_object_or_404(Election, pk=election_id)
+    election = get_object_or_404(Election, pk=election_id, is_active=True)
 
     if request.method == 'POST':
         candidate_id = request.POST.get('candidate_id')
-        if voter.has_voted:
-            return HttpResponse("You have already voted n this election.")
+        candidate = get_object_or_404(
+            Candidate, pk=candidate_id, election=election)
 
-        candidate = get_object_or_404(Candidate, pk=candidate_id)
-        if candidate.election.id != election.id:
-            return HttpResponse("Invalid candidate for this election.")
+    if Vote.objects.filter(voter=voter, election=election).exists():
+        messages.error(request, "You have already voted in this election.")
+        return redirect('elections_list')
 
         Vote.objects.create(
             voter=voter, candidate=candidate, election=election)
         voter.has_voted = True
         voter.save()
-        return HttpResponse("Thank you for voting!")
+        messages.success(request, "Thank you for voting!")
+        return redirect('elections_list')
+
+    candidates = Candidate.objects.filter(election=election)
+    return render(request, 'voting/cast_vote.html', {'election': election, 'candidates': candidates})
 
     return render(request, 'cast_vote.html', {'election': election})
