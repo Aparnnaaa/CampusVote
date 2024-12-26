@@ -4,7 +4,6 @@
     <title>{{ election.title }}</title>
   </head>
   <body>
-    <a href="{% url 'cast_vote' election.id %}">Cast Your Vote</a>
     <h1>{{ election.title }}</h1>
     <p>{{ election.description }}</p>
     <h2>Candidates</h2>
@@ -13,6 +12,7 @@
       <li>
         <strong>{{ candidate.name }}</strong> - {{ candidate.position }}
         <p>{{ candidate.manifesto }}</p>
+        <a href="{% url 'cast_vote' election.election_id %}">Cast Your Vote</a>
       </li>
       {% endfor %}
     </ul>

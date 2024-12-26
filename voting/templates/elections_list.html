@@ -5,7 +5,6 @@
   </head>
   <body>
     <h1>Ongoing Elections</h1>
-    <a href="{% url 'cast_vote' election.id %}">Cast Your Vote</a>
     <ul>
       {% for election in elections %}
       <li>
@@ -13,6 +12,7 @@
           >{{ election.title }}</a
         >
         <p>{{ election.description }}</p>
+        <a href="{% url 'cast_vote' election.election_id %}">Cast Your Vote</a>
       </li>
       {% endfor %}
     </ul>

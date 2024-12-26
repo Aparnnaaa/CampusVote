@@ -3,12 +3,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.hashers import check_password
 from .models import Voter, Election, Candidate, Vote
-from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required
 
 
 def voter_login(request):
-
     if request.session.get("voter_id"):
         return redirect('voter_dashboard')
 
@@ -51,24 +48,29 @@ def elections_list(request):
 @voter_required
 def election_details(request, election_id):
     election = get_object_or_404(Election, pk=election_id)
-    candidates = election.candidates.all()
+    candidates = election.candidates.all()  # Using related_name in Candidate model
+
     return render(request, 'election_details.html', {'election': election, 'candidates': candidates})
 
 
-@login_required
+@voter_required
 def cast_vote(request, election_id):
-    voter = request.user
+    voter_id = request.session.get('voter_id')
+    voter = get_object_or_404(Voter, pk=voter_id)
     election = get_object_or_404(Election, pk=election_id, is_active=True)
-
-    if request.method == 'POST':
-        candidate_id = request.POST.get('candidate_id')
-        candidate = get_object_or_404(
-            Candidate, pk=candidate_id, election=election)
 
     if Vote.objects.filter(voter=voter, election=election).exists():
         messages.error(request, "You have already voted in this election.")
         return redirect('elections_list')
 
+    if request.method == 'POST':
+        candidate_id = request.POST.get('candidate_id')
+        if not candidate_id:
+            messages.error(request, "You must select a candidate to vote.")
+            return redirect('cast_vote', election_id=election_id)
+
+        candidate = get_object_or_404(
+            Candidate, pk=candidate_id, election=election)
         Vote.objects.create(
             voter=voter, candidate=candidate, election=election)
         voter.has_voted = True
@@ -76,7 +78,5 @@ def cast_vote(request, election_id):
         messages.success(request, "Thank you for voting!")
         return redirect('elections_list')
 
-    candidates = Candidate.objects.filter(election=election)
-    return render(request, 'voting/cast_vote.html', {'election': election, 'candidates': candidates})
-
-    return render(request, 'cast_vote.html', {'election': election})
+    candidates = election.candidates.all()
+    return render(request, 'cast_vote.html', {'election': election, 'candidates': candidates})
