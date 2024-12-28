@@ -63,8 +63,10 @@ def cast_vote(request, election_id):
         messages.error(request, "You have already voted in this election.")
         return redirect('elections_list')
 
-    if request.method == 'POST':
+    if request.method == 'POST' and 'confirm_vote' in request.POST:
         candidate_id = request.POST.get('candidate_id')
+        candidate = get_object_or_404(Candidate, pk=candidate_id)
+        return render(request, 'confirm_vote.html', {'election': election, 'candidate': candidate})
         if not candidate_id:
             messages.error(request, "You must select a candidate to vote.")
             return redirect('cast_vote', election_id=election_id)

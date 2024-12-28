@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Confirm Your Vote</title>
+</head>
+<body>
+    <h1>Confirm Your Vote</h2>
+    <p>You are voting for {{ camdidate.name }} in {{ election.title }}.</p>
+    <form method="POST" action="{% url 'caste_vote' election.id %}">
+        {% csrf_token %}
+        <input type="hidden" name="candidate_id" value="{{ candidate.id }}">
+        <button type="submit" name="finalize_vote">Confirm</button>
+    </form>
+</body>
+</html>
