@@ -12,7 +12,7 @@
       <li>
         <strong>{{ candidate.name }}</strong> - {{ candidate.position }}
         <p>{{ candidate.manifesto }}</p>
-        <a href="{% url 'cast_vote' election.election_id %}">Cast Your Vote</a>
+        <a href="{% url 'vote_form' election.election_id %}">Cast Your Vote</a>
       </li>
       {% endfor %}
     </ul>

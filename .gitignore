@@ -9,6 +9,7 @@ __pycache__/
 # Django
 db.sqlite3
 /media/
+candidate_photos
 
 # Logs
 *.log

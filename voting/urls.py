@@ -9,5 +9,10 @@ urlpatterns = [
     path('dashboard/elections/<int:election_id>/',
          views.election_details, name='election_details'),
     path('elections/<int:election_id>/vote/',
+         views.vote_form, name='vote_form'),
+    path('elections/<int:election_id>/confirm_vote/',
+         views.confirm_vote, name='confirm_vote'),
+    path('elections/<int:election_id>/cast_vote/',
          views.cast_vote, name='cast_vote'),
+
 ]
