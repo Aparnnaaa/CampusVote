@@ -56,7 +56,7 @@ def election_details(request, election_id):
 @voter_required
 def vote_form(request, election_id):
     voter_id = request.session.get('voter_id')
-    voter = get_object_or_404(voter, pk=voter_id)
+    voter = get_object_or_404(Voter, pk=voter_id)
     election = get_object_or_404(Election, pk=election_id, is_active=True)
 
     if Vote.objects.filter(voter=voter, election=election).exists():
