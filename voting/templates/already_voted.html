@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Already Voted</title>
+  </head>
+  <body>
+    <h1>You have already voted</h1>
+    <p>Thank you for your participation in {{ election.title }}.</p>
+    <a href="{% url 'elections_list' %}">Back to Elections List</a>
+  </body>
+</html>
