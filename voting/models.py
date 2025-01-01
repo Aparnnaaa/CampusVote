@@ -30,7 +30,8 @@ class Candidate(models.Model):
     name = models.CharField(max_length=100)
     manifesto = models.TextField()
     department = models.CharField(max_length=100)
-    position = models.CharField(max_length=50)
+    position = models.ForeignKey(
+        'Position', on_delete=models.CASCADE, related_name='candidates')
     photo = models.ImageField(
         upload_to='candidate_photos/', blank=True, null=True)
     election = models.ForeignKey(
@@ -38,7 +39,7 @@ class Candidate(models.Model):
     vote_count = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"{self.name} - {self.position}"  # Timestamp of creation
+        return f"{self.name} - {self.position.title}"  # Timestamp of creation
 
 
 class Election(models.Model):
@@ -60,16 +61,21 @@ class Election(models.Model):
 
 class Vote(models.Model):
     vote_id = models.AutoField(primary_key=True)
-    voter = models.ForeignKey(Voter, on_delete=models.CASCADE)
+    voter = models.CharField(Voter, max_length=100)
     candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE)
     election = models.ForeignKey(Election, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(
-                fields=['voter', 'election'], name='unique_vote_per_election')
-        ]
+            models.UniqueConstraint(fields=['voter', 'election', 'Candidate'])]
 
     def __str__(self):
         return f"vote by {self.voter} for {self.candidate}"
+
+
+class Position(models.Model):
+    title = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.title

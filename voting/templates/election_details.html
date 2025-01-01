@@ -7,6 +7,8 @@
     <h1>{{ election.title }}</h1>
     <p>{{ election.description }}</p>
     <h2>Candidates</h2>
+    {% for position, candidates in grouped_candidates.items %}
+    <h3>{{ posiytion }}</h3>
     <ul>
       {% for candidate in candidates %}
       <li>

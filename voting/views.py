@@ -48,12 +48,17 @@ def elections_list(request):
 @voter_required
 def election_details(request, election_id):
     election = get_object_or_404(Election, pk=election_id)
-    candidates = election.candidates.all()  # Using related_name in Candidate model
+    candidates = election.candidates.select_related('position').order_by(
+        'position_title')  # Using related_name in Candidate model
 
-    return render(request, 'election_details.html', {'election': election, 'candidates': candidates})
+    grouped_candidates = defaultdict(list)
+    for candidate in candidates:
+        grouped_candidates[candidate.position.title].append(candidate)
+
+        return render(request, 'election_details.html', {'election': election, 'grouped_candidates': grouped_candidates})
 
 
-@voter_required
+@ voter_required
 def vote_form(request, election_id):
     voter_id = request.session.get('voter_id')
     voter = get_object_or_404(Voter, pk=voter_id)
@@ -67,7 +72,7 @@ def vote_form(request, election_id):
     return render(request, 'vote_form.html', {'election': election, 'candidates': candidates})
 
 
-@voter_required
+@ voter_required
 def confirm_vote(request, election_id):
     if request.method == 'POST':
         candidate_id = request.POST.get('candidate_id')
@@ -78,7 +83,7 @@ def confirm_vote(request, election_id):
     return redirect('vote_form', election_id=election_id)
 
 
-@voter_required
+@ voter_required
 def cast_vote(request, election_id):
     if request.method == 'POST' and 'finalize_vote' in request.POST:
         voter_id = request.session.get('voter_id')
@@ -96,7 +101,9 @@ def cast_vote(request, election_id):
         Vote.objects.create(
             voter=voter, candidate=candidate, election=election)
         voter.has_voted = True
+        candidate.vote_count += 1
         voter.save()
+        candidate.save()
 
         messages.success(request, "Thank you for voting!")
         return redirect('elections_list')
