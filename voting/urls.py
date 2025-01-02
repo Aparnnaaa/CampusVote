@@ -10,7 +10,7 @@ urlpatterns = [
          views.election_details, name='election_details'),
     path('elections/<int:election_id>/vote/<str:position>/',
          views.vote_form, name='vote_form'),
-    path('elections/<int:election_id>/confirm_vote/',
+    path('elections/<int:election_id>/confirm/',
          views.confirm_vote, name='confirm_vote'),
     path('elections/<int:election_id>/cast_vote/',
          views.cast_vote, name='cast_vote'),

@@ -3,7 +3,7 @@ from .utils import voter_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.hashers import check_password
-from collections import defaultdict
+from django.db.models import F
 from .models import Voter, Election, Candidate, Vote
 
 
@@ -114,6 +114,7 @@ def cast_vote(request, election_id):
             messages.error(request, "You must select a candidate to vote.")
             return redirect('vote_form', election_id=election_id)
 
+        # Retrieve the candidate and check election association
         candidate = get_object_or_404(
             Candidate, pk=candidate_id, election=election)
 
@@ -128,10 +129,10 @@ def cast_vote(request, election_id):
             )
             return redirect('election_details', election_id=election_id)
 
-        # Record the vote
+        # Record the vote and update the candidate's vote count
         Vote.objects.create(
             voter=voter, candidate=candidate, election=election)
-        candidate.vote_count += 1
+        candidate.vote_count = F('vote_count') + 1  # Safe atomic increment
         candidate.save()
 
         messages.success(
@@ -141,6 +142,7 @@ def cast_vote(request, election_id):
         )
         return redirect('election_details', election_id=election_id)
 
+    # Redirect to vote form if the request is not a POST or missing parameters
     return redirect('vote_form', election_id=election_id)
 
 

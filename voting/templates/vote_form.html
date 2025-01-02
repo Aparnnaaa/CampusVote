@@ -5,7 +5,7 @@
   </head>
   <body>
     <h1>Vote for {{ position }}</h1>
-    <form method="POST">
+    <form method="POST" action="{% url 'confirm_vote' election.election_id %}">
       {% csrf_token %}
       <h3>Choose a candidate:</h3>
       <ul>
