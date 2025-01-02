@@ -14,5 +14,8 @@ urlpatterns = [
          views.confirm_vote, name='confirm_vote'),
     path('elections/<int:election_id>/cast_vote/',
          views.cast_vote, name='cast_vote'),
-
+    path('election/<int:election_id>/monitor/',
+         views.election_monitoring, name='election_monitoring'),
+    path('admin/election/<int:election_id>/progress/',
+         views.admin_election_progress, name='admin_election_progress'),
 ]

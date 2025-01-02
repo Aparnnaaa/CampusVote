@@ -1,3 +1,4 @@
+from django.contrib.admin.views.decorators import staff_member_required
 from .utils import voter_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
@@ -140,3 +141,31 @@ def cast_vote(request, election_id):
         return redirect('election_details', election_id=election_id)
 
     return redirect('vote_form', election_id=election_id)
+
+
+def election_monitoring(request, election_id):
+    election = get_object_or_404(Election, pk=election_id)
+    total_voters = Voter.objects.filter(is_verified=True).count()
+    votes_cast = Vote.objects.filter(election=election).count()
+    turnout_percentage = (votes_cast / total_voters) * \
+        100 if total_voters > 0 else 0
+
+    return render(request, 'election_monitoring.html', {
+        'election': election,
+        'votes_cast': votes_cast,
+        'total_voters': total_voters,
+        'turnout_percentage': turnout_percentage
+    })
+
+
+@staff_member_required
+def admin_election_progress(request, election_id):
+    election = get_object_or_404(Election, pk=election_id)
+    candidates = election.candidates.all().order_by('-vote_count')  # Sort by votes
+    total_votes = Vote.objects.filter(election=election).count()
+
+    return render(request, 'admin_election_progress.html', {
+        'election': election,
+        'candidates': candidates,
+        'total_votes': total_votes
+    })
