@@ -12,10 +12,15 @@
           >{{ election.title }}</a
         >
         <p>{{ election.description }}</p>
-        <a href="{% url 'vote_form' election.election_id %}">Cast Your Vote</a>
+        <!-- Guide the voter to the election details page -->
+        <a href="{% url 'election_details' election.election_id %}"
+          >View Details & Vote</a
+        >
       </li>
       {% endfor %}
     </ul>
+
+    <!-- Display any messages, such as errors or confirmations -->
     {% if messages %}
     <div>
       {% for message in messages %}

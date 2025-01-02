@@ -49,7 +49,6 @@ def elections_list(request):
 
 @voter_required
 def election_details(request, election_id):
-    from collections import defaultdict
     election = get_object_or_404(Election, pk=election_id)
     candidates = election.candidates.select_related(
         'position').order_by('position__title')
@@ -68,26 +67,28 @@ def election_details(request, election_id):
 
 
 @voter_required
-def vote_form(request, election_id):
+def vote_form(request, election_id, position):
     voter_id = request.session.get('voter_id')
     voter = get_object_or_404(Voter, pk=voter_id)
     election = get_object_or_404(Election, pk=election_id, is_active=True)
 
-    voted_positions = Vote.objects.filter(
-        voter=voter, election=election
-    ).values_list('candidate__position', flat=True)
+    # Check if the voter has already voted for this position
+    if Vote.objects.filter(voter=voter, election=election, candidate__position__title=position).exists():
+        messages.error(
+            request, f"You have already voted for the position: {position}.")
+        return redirect('election_details', election_id=election_id)
 
+    # Filter candidates for the given position
     candidates = Candidate.objects.filter(
-        election=election
-    ).exclude(position__in=voted_positions)
+        election=election, position__title=position)
 
     if not candidates:
-        # If no candidates are left to vote for, show a message
+        # If no candidates exist for the position, show a message
         messages.error(
-            request, "You have already voted for all positions in this election.")
-        return render(request, 'already_voted.html', {'election': election})
+            request, f"No candidates available for the position: {position}.")
+        return redirect('election_details', election_id=election_id)
 
-    return render(request, 'vote_form.html', {'election': election, 'candidates': candidates})
+    return render(request, 'vote_form.html', {'election': election, 'candidates': candidates, 'position': position})
 
 
 @ voter_required
@@ -97,7 +98,7 @@ def confirm_vote(request, election_id):
         election = get_object_or_404(Election, pk=election_id, is_active=True)
         candidate = get_object_or_404(
             Candidate, pk=candidate_id, election=election)
-        return render(request, 'confirm_vote.html', {'election': election, 'candidate': candidate})
+        return render(request, 'confirm_vote.html', {'election': election, 'candidate': candidate, 'position': candidate.position})
     return redirect('vote_form', election_id=election_id)
 
 

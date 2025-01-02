@@ -1,20 +1,29 @@
-<form method="POST" action="{% url 'confirm_vote' election.election_id %}">
-  {% csrf_token %}
-  <h3>Choose a candidate:</h3>
-  <ul>
-    {% for candidate in candidates %}
-    <li>
-      <label>
-        <input
-          type="radio"
-          name="candidate_id"
-          value="{{ candidate.candidate_id }}"
-          required
-        />
-        {{ candidate.name }} - {{ candidate.position }}
-      </label>
-    </li>
-    {% endfor %}
-  </ul>
-  <button type="submit">Submit Vote</button>
-</form>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Vote for {{ position }}</title>
+  </head>
+  <body>
+    <h1>Vote for {{ position }}</h1>
+    <form method="POST">
+      {% csrf_token %}
+      <h3>Choose a candidate:</h3>
+      <ul>
+        {% for candidate in candidates %}
+        <li>
+          <label>
+            <input
+              type="radio"
+              name="candidate_id"
+              value="{{ candidate.candidate_id }}"
+              required
+            />
+            {{ candidate.name }}
+          </label>
+        </li>
+        {% endfor %}
+      </ul>
+      <button type="submit">Submit Vote</button>
+    </form>
+  </body>
+</html>

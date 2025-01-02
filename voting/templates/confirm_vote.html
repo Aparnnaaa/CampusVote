@@ -23,7 +23,7 @@
       function showMessage(message) {
         alert(message); // Displays the message in a simple alert dialog
       }
-      
+
       {% if messages %}
       {% for message in messages %}
       showMessage("{{ message|escapejs }}");

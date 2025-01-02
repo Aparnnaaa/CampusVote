@@ -1,24 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <title>{{ election.title }}</title>
-  </head>
-  <body>
-    <h1>{{ election.title }}</h1>
-    <p>{{ election.description }}</p>
-    <h2>Candidates</h2>
-
-    {% for position, candidates in grouped_candidates.items %}
-    <h3>Position: {{ position }}</h3>
-    <ul>
-      {% for candidate in candidates %}
-      <li>
-        <strong>Name: {{ candidate.name }}</strong> - {{ candidate.position }}
-        <p>Manisfesto: {{ candidate.manifesto }}</p>
-        <a href="{% url 'vote_form' election.election_id %}">Cast Your Vote</a>
-      </li>
-      {% endfor %}
-    </ul>
-    {% endfor %}
-  </body>
-</html>
+{% for position, candidates in grouped_candidates.items %}
+<h3>{{ position }}</h3>
+<ul>
+  {% for candidate in candidates %}
+  <li>
+    <strong>{{ candidate.name }}</strong>
+    <p>{{ candidate.manifesto }}</p>
+    <a href="{% url 'vote_form' election.election_id position %}"
+      >Cast Your Vote</a
+    >
+  </li>
+  {% endfor %}
+</ul>
+{% endfor %}
