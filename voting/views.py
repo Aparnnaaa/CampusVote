@@ -2,6 +2,7 @@ from .utils import voter_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.hashers import check_password
+from collections import defaultdict
 from .models import Voter, Election, Candidate, Vote
 
 
@@ -47,28 +48,44 @@ def elections_list(request):
 
 @voter_required
 def election_details(request, election_id):
+    from collections import defaultdict
     election = get_object_or_404(Election, pk=election_id)
-    candidates = election.candidates.select_related('position').order_by(
-        'position_title')  # Using related_name in Candidate model
+    candidates = election.candidates.select_related(
+        'position').order_by('position__title')
 
-    grouped_candidates = defaultdict(list)
+    grouped_candidates = {}
     for candidate in candidates:
-        grouped_candidates[candidate.position.title].append(candidate)
+        position_title = candidate.position.title
+        if position_title not in grouped_candidates:
+            grouped_candidates[position_title] = []
+        grouped_candidates[position_title].append(candidate)
 
-        return render(request, 'election_details.html', {'election': election, 'grouped_candidates': grouped_candidates})
+    return render(request, 'election_details.html', {
+        'election': election,
+        'grouped_candidates': grouped_candidates
+    })
 
 
-@ voter_required
+@voter_required
 def vote_form(request, election_id):
     voter_id = request.session.get('voter_id')
     voter = get_object_or_404(Voter, pk=voter_id)
     election = get_object_or_404(Election, pk=election_id, is_active=True)
 
-    if Vote.objects.filter(voter=voter, election=election).exists():
-        messages.error(request, "You have already voted in this election.")
+    voted_positions = Vote.objects.filter(
+        voter=voter, election=election
+    ).values_list('candidate__position', flat=True)
+
+    candidates = Candidate.objects.filter(
+        election=election
+    ).exclude(position__in=voted_positions)
+
+    if not candidates:
+        # If no candidates are left to vote for, show a message
+        messages.error(
+            request, "You have already voted for all positions in this election.")
         return render(request, 'already_voted.html', {'election': election})
 
-    candidates = Candidate.objects.filter(election=election)
     return render(request, 'vote_form.html', {'election': election, 'candidates': candidates})
 
 
@@ -83,28 +100,43 @@ def confirm_vote(request, election_id):
     return redirect('vote_form', election_id=election_id)
 
 
-@ voter_required
+@voter_required
 def cast_vote(request, election_id):
+    voter_id = request.session.get('voter_id')
+    voter = get_object_or_404(Voter, pk=voter_id)
+    election = get_object_or_404(Election, pk=election_id, is_active=True)
+
     if request.method == 'POST' and 'finalize_vote' in request.POST:
-        voter_id = request.session.get('voter_id')
-        voter = get_object_or_404(Voter, pk=voter_id)
-        election = get_object_or_404(Election, pk=election_id, is_active=True)
-
-        if Vote.objects.filter(voter=voter, election=election).exists():
-            messages.error(request, "You have already voted in this election.")
-            return redirect('elections_list')
-
         candidate_id = request.POST.get('candidate_id')
+        if not candidate_id:
+            messages.error(request, "You must select a candidate to vote.")
+            return redirect('vote_form', election_id=election_id)
+
         candidate = get_object_or_404(
             Candidate, pk=candidate_id, election=election)
 
+        # Check if the voter has already voted for this position
+        if Vote.objects.filter(
+            voter=voter, election=election, candidate__position=candidate.position
+        ).exists():
+            messages.error(
+                request,
+                f"You have already voted for the position: {
+                    candidate.position.title}."
+            )
+            return redirect('election_details', election_id=election_id)
+
+        # Record the vote
         Vote.objects.create(
             voter=voter, candidate=candidate, election=election)
-        voter.has_voted = True
         candidate.vote_count += 1
-        voter.save()
         candidate.save()
 
-        messages.success(request, "Thank you for voting!")
-        return redirect('elections_list')
+        messages.success(
+            request,
+            f"Your vote for {candidate.name} as {
+                candidate.position.title} has been cast!"
+        )
+        return redirect('election_details', election_id=election_id)
+
     return redirect('vote_form', election_id=election_id)

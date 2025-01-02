@@ -61,17 +61,20 @@ class Election(models.Model):
 
 class Vote(models.Model):
     vote_id = models.AutoField(primary_key=True)
-    voter = models.CharField(Voter, max_length=100)
+    voter = models.ForeignKey(Voter, on_delete=models.CASCADE)
     candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE)
     election = models.ForeignKey(Election, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        # UniqueConstraint on voter and candidate (to handle one vote per position programmatically)
         constraints = [
-            models.UniqueConstraint(fields=['voter', 'election', 'Candidate'])]
+            models.UniqueConstraint(
+                fields=['voter', 'candidate'], name='unique_vote_per_candidate')
+        ]
 
     def __str__(self):
-        return f"vote by {self.voter} for {self.candidate}"
+        return f"Vote by {self.voter.name} for {self.candidate.name} in {self.candidate.position.title}"
 
 
 class Position(models.Model):

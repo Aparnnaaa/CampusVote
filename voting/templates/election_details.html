@@ -7,16 +7,18 @@
     <h1>{{ election.title }}</h1>
     <p>{{ election.description }}</p>
     <h2>Candidates</h2>
+
     {% for position, candidates in grouped_candidates.items %}
-    <h3>{{ posiytion }}</h3>
+    <h3>Position: {{ position }}</h3>
     <ul>
       {% for candidate in candidates %}
       <li>
-        <strong>{{ candidate.name }}</strong> - {{ candidate.position }}
-        <p>{{ candidate.manifesto }}</p>
+        <strong>Name: {{ candidate.name }}</strong> - {{ candidate.position }}
+        <p>Manisfesto: {{ candidate.manifesto }}</p>
         <a href="{% url 'vote_form' election.election_id %}">Cast Your Vote</a>
       </li>
       {% endfor %}
     </ul>
+    {% endfor %}
   </body>
 </html>
