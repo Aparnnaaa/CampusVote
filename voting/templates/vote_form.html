@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Vote for {{ position }}</title>
+    <title>Vote for {{ position.title }}</title>
   </head>
   <body>
-    <h1>Vote for {{ position }}</h1>
+    <h1>Vote for Position: {{ position.title }}</h1>
     <form method="POST" action="{% url 'confirm_vote' election.election_id %}">
       {% csrf_token %}
       <h3>Choose a candidate:</h3>

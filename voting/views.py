@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.hashers import check_password
 from django.db.models import F
-from .models import Voter, Election, Candidate, Vote
+from .models import Position, Voter, Election, Candidate, Vote
 
 
 def voter_login(request):
@@ -67,28 +67,37 @@ def election_details(request, election_id):
 
 
 @voter_required
-def vote_form(request, election_id, position):
+def vote_form(request, election_id, position_id):
     voter_id = request.session.get('voter_id')
     voter = get_object_or_404(Voter, pk=voter_id)
     election = get_object_or_404(Election, pk=election_id, is_active=True)
+    position = get_object_or_404(Position, pk=position_id)
 
     # Check if the voter has already voted for this position
-    if Vote.objects.filter(voter=voter, election=election, candidate__position__title=position).exists():
-        messages.error(
-            request, f"You have already voted for the position: {position}.")
-        return redirect('election_details', election_id=election_id)
+    if Vote.objects.filter(
+        voter=voter, election=election, candidate__position=position
+    ).exists():
+        return render(request, 'already_voted.html', {
+            'election': election,
+            'position': position,
+        })
 
     # Filter candidates for the given position
     candidates = Candidate.objects.filter(
-        election=election, position__title=position)
+        election=election, position=position
+    )
 
     if not candidates:
-        # If no candidates exist for the position, show a message
         messages.error(
-            request, f"No candidates available for the position: {position}.")
+            request, "No candidates are available for this position."
+        )
         return redirect('election_details', election_id=election_id)
 
-    return render(request, 'vote_form.html', {'election': election, 'candidates': candidates, 'position': position})
+    return render(request, 'vote_form.html', {
+        'election': election,
+        'position': position,
+        'candidates': candidates,
+    })
 
 
 @ voter_required

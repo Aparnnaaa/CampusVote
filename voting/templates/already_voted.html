@@ -4,8 +4,14 @@
     <title>Already Voted</title>
   </head>
   <body>
-    <h1>You have already voted</h1>
-    <p>Thank you for your participation in {{ election.title }}.</p>
-    <a href="{% url 'elections_list' %}">Back to Elections List</a>
+    <h1>Already Voted</h1>
+    <p>
+      You have already voted for the position:
+      <strong>{{ position.title }}</strong> in the election:
+      <strong>{{ election.title }}</strong>.
+    </p>
+    <a href="{% url 'election_details' election.election_id %}"
+      >Back to Election Details</a
+    >
   </body>
 </html>
