@@ -1,32 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <title>Ongoing Elections</title>
-  </head>
-  <body>
-    <h1>Ongoing Elections</h1>
-    <ul>
-      {% for election in elections %}
-      <li>
-        <a href="{% url 'election_details' election.election_id %}"
-          >{{ election.title }}</a
-        >
-        <p>{{ election.description }}</p>
-        <!-- Guide the voter to the election details page -->
-        <a href="{% url 'election_details' election.election_id %}"
-          >View Details & Vote</a
-        >
-      </li>
-      {% endfor %}
-    </ul>
+{% extends 'base.html' %} {% block title %}Ongoing Elections{% endblock %} {% block content %}
+<div class="container mt-5">
+  <h1 class="text-center mb-4">Ongoing Elections</h1>
 
-    <!-- Display any messages, such as errors or confirmations -->
-    {% if messages %}
-    <div>
-      {% for message in messages %}
-      <p class="message {{ message.tags }}">{{ message }}</p>
-      {% endfor %}
+  <!-- Check if there are any elections -->
+  {% if elections %}
+  <div class="row">
+    {% for election in elections %}
+    <div class="col-md-6">
+      <div class="card mb-4 shadow">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">{{ election.title }}</h5>
+        </div>
+        <div class="card-body">
+          <p class="card-text">{{ election.description }}</p>
+          <a
+            href="{% url 'election_details' election.election_id %}"
+            class="btn btn-primary w-100"
+          >
+            View Details & Vote
+          </a>
+        </div>
+      </div>
     </div>
-    {% endif %}
-  </body>
-</html>
+    {% endfor %}
+  </div>
+  {% else %}
+  <!-- No elections available -->
+  <div class="alert alert-info text-center" role="alert">
+    No ongoing elections at the moment. Please check back later.
+  </div>
+  {% endif %}
+
+  <!-- Display any messages, such as errors or confirmations -->
+  {% if messages %}
+  <div class="mt-4">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} text-center" role="alert">
+      {{ message }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+</div>

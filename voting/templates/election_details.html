@@ -1,14 +1,22 @@
-{% for position, candidates in grouped_candidates.items %}
-<h3>{{ position }}</h3>
-<ul>
-  {% for candidate in candidates %}
-  <li>
-    <strong>{{ candidate.name }}</strong>
-    <p>{{ candidate.manifesto }}</p>
-    <a href="{% url 'vote_form' election.election_id candidate.position.id %}">
-      Cast Your Vote
-    </a>
-  </li>
+{% extends 'base.html'%}
+{% block title %}Election details{% endblock %}
+{% block content %}
+<div>
+  {% for position, candidates in grouped_candidates.items %}
+  <h3>{{ position }}</h3>
+  <ul>
+    {% for candidate in candidates %}
+    <li>
+      <strong>{{ candidate.name }}</strong>
+      <p>{{ candidate.manifesto }}</p>
+      <a
+        href="{% url 'vote_form' election.election_id candidate.position.id %}"
+      >
+        Cast Your Vote
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
   {% endfor %}
-</ul>
-{% endfor %}
+</div>
+{% endblock %}

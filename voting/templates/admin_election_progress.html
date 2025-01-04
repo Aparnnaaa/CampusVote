@@ -1,30 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <title>{{ election.title }} Progress</title>
-  </head>
-  <body>
-    <h1>Election Progress: {{ election.title }}</h1>
-    <p>Total Votes Cast: {{ total_votes }}</p>
+{% extends 'base.html' %} {% block title %} {{ election.title }} Progress {% endblock %} {% block content %}
+<div>
+  <h1>Election Progress: {{ election.title }}</h1>
+  <p>Total Votes Cast: {{ total_votes }}</p>
 
-    <h2>Candidate Votes</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Candidate</th>
-          <th>Position</th>
-          <th>Votes</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for candidate in candidates %}
-        <tr>
-          <td>{{ candidate.name }}</td>
-          <td>{{ candidate.position.title }}</td>
-          <td>{{ candidate.vote_count }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </body>
-</html>
+  <h2>Candidate Votes</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Candidate</th>
+        <th>Position</th>
+        <th>Votes</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for candidate in candidates %}
+      <tr>
+        <td>{{ candidate.name }}</td>
+        <td>{{ candidate.position.title }}</td>
+        <td>{{ candidate.vote_count }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

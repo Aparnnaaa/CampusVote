@@ -1,13 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <title>{{ election.title }} Monitoring</title>
-  </head>
-  <body>
-    <h1>Monitoring: {{ election.title }}</h1>
-    <p>Description: {{ election.description }}</p>
-    <p>Total Verified Voters: {{ total_voters }}</p>
-    <p>Votes Cast: {{ votes_cast }}</p>
-    <p>Voter Turnout: {{ turnout_percentage|floatformat:2 }}%</p>
-  </body>
-</html>
+{% extends 'base.html' %} {% block title %}{{ election.title }} Monitoring{%endblock%}
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h2 class="text-center mb-0">Monitoring: {{ election.title }}</h2>
+        </div>
+        <div class="card-body">
+          <p><strong>Description:</strong> {{ election.description }}</p>
+          <p><strong>Start Date:</strong> {{ election.start_date|date:"F j, Y" }}</p>
+          <p><strong>End Date:</strong> {{ election.end_date|date:"F j, Y" }}</p>
+          
+
+          <hr />
+          <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <strong>Total Verified Voters:</strong>
+              <span>{{ total_voters }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <strong>Votes Cast:</strong>
+              <span>{{ votes_cast }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <strong>Voter Turnout:</strong>
+              <span>{{ turnout_percentage|floatformat:2 }}%</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,20 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <title>Voter Login</title>
-  </head>
-  <body>
-    <h2>Voter Login</h2>
-    <form method="POST">
-      {% csrf_token %}
-      <label for="student_id">Student ID:</label>
-      <input type="text" name="student_id" required /><br />
-      <label for="password">Password:</label>
-      <input type="password" name="password" required /><br />
-      <button type="submit">Login</button>
-    </form>
-    {% if messages %} {% for message in messages %}
-    <p>{{ message }}</p>
-    {% endfor %} {% endif %}
-  </body>
-</html>
+{% extends 'base.html'%} {% block title %}Voter Login{% endblock %}
+{% block content %}
+<div>
+  <div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="card shadow p-4" style="max-width: 400px; width: 100%;">
+      <div class="card-body">
+  <h2 class="text-center mb-4">Voter Login</h2>
+  <form method="POST">
+    {% csrf_token %}
+    <label for="student_id">Student ID:</label>
+    <input type="text" name="student_id" required id="student_id" class="from-control" placeholder="Enter your student ID" required /><br />
+  </div>
+  <div class="mb-3">
+    <label for="password" class="from-label">Password:</label>
+    <input type="password" name="password" required id="password" class="from-control" placeholder="Enter your password" required /><br />
+  </div>
+    <button type="submit" class="btn btn-primary w-100">Login</button>
+  </form>
+  {% if messages %}
+  <div class="mt-3"> 
+  {% for message in messages %}
+  <div class="alert alert-danger" role="alert">
+  <p>{{ message }}</p>
+  </div>
+  {% endfor %}
+</div>
+  {% endif %}
+</div>
+</div>
+</div>
+{% endblock %}

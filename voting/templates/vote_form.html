@@ -1,29 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <title>Vote for {{ position.title }}</title>
-  </head>
-  <body>
-    <h1>Vote for Position: {{ position.title }}</h1>
-    <form method="POST" action="{% url 'confirm_vote' election.election_id %}">
-      {% csrf_token %}
-      <h3>Choose a candidate:</h3>
-      <ul>
-        {% for candidate in candidates %}
-        <li>
-          <label>
-            <input
-              type="radio"
-              name="candidate_id"
-              value="{{ candidate.candidate_id }}"
-              required
-            />
-            {{ candidate.name }}
-          </label>
-        </li>
-        {% endfor %}
-      </ul>
-      <button type="submit">Submit Vote</button>
-    </form>
-  </body>
-</html>
+{% extends 'base.html'%} {% block title %}Vote for {{ position.title }}{% endblock %} {% block content %}
+<div>
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card shadow">
+          <div class="card-header bg-primary text-white">
+            <h1 class="mb-0 text-center">
+              Vote for Position: {{ position.title }}
+            </h1>
+          </div>
+          <form
+            method="POST"
+            action="{% url 'confirm_vote' election.election_id %}"
+          >
+            {% csrf_token %}
+            <h3 class="mb-3">Choose a candidate:</h3>
+            <ul class="list-group">
+              {% for candidate in candidates %}
+              <li
+                class="list-group-item d-flex justify-content-between align-items-center"
+              >
+                <label class="form-check-label">
+                  <input
+                    type="radio"
+                    name="candidate_id"
+                    value="{{ candidate.candidate_id }}"
+                    class="from-check-input me-2"
+                    required
+                  />
+                  {{ candidate.name }}
+                </label>
+              </li>
+              {% endfor %}
+            </ul>
+            <button type="submit" class="btn btn-success w-100 mt-4"> Submit Vote</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
