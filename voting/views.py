@@ -6,12 +6,13 @@ from django.contrib.auth.hashers import check_password
 from django.db.models import F
 from .models import Position, Voter, Election, Candidate, Vote
 
+
 def candidate_login(request):
     if request.session.get("candidate_id"):
         return redirect('candidate_dashboard')
 
     if request.method == 'POST':
-        Candidate_id = request.POST['candidate_id']
+        candidate_id = request.POST['candidate_id']
         password = request.POST['password']
         try:
             Candidate = Candidate.objects.get(candidate_id=candidate_id)
@@ -31,13 +32,14 @@ def candidate_dashboard(request):
     if not candidate_id:
         return redirect('candidate_login')
     voter = Voter.objects.get(candidate_id=candidate_id)
-    return render(request, 'candidate_dashboard.html', {'candidate': candidate})
+    return render(request, 'candidate_dashboard.html', )
 
 
 @candidate_required
 def candidate_logout(request):
     request.session.flush()  # Clear session data
     return redirect('candidate_login')
+
 
 def voter_login(request):
     if request.session.get("voter_id"):
@@ -166,7 +168,8 @@ def cast_vote(request, election_id):
         ).exists():
             messages.error(
                 request,
-                f"You have already voted for the position: {candidate.position.title}."
+                f"You have already voted for the position: {
+                    candidate.position.title}."
             )
             return redirect('election_details', election_id=election_id)
 
@@ -179,7 +182,8 @@ def cast_vote(request, election_id):
 
         messages.success(
             request,
-            f"Your vote for {candidate.name} as {candidate.position.title} has been cast!"
+            f"Your vote for {candidate.name} as {
+                candidate.position.title} has been cast!"
         )
         return render(request, 'vote_success.html', {
             'election': election,
