@@ -1,10 +1,20 @@
-{% extends 'base.html' %} {% block title %} Confirm Your Vote {% endblock %}
+{% extends 'base.html' %} 
+{% block title %} Confirm Your Vote {% endblock %}
 {% block content %}
-<div>
-  <h1>Confirm Your Vote</h1>
-  <p>You are voting for {{ candidate.name }} in {{ election.title }}.</p>
-
-  <!-- Form to submit the final vote -->
+<div class="container mt-5">
+  <div class="card shadow">
+    <div class="card-header bg-primary text-white">
+      <h1>Confirm Your Vote</h1>
+    </div>
+    <div class="card-body">
+      <p class="lead">
+        You are voting for <strong>{{ candidate.name }}</strong> in the election:
+        <strong>{{ election.title }}</strong>
+      </p>
+      <div class="mb-3">
+        <h5>Candidate's Manifesto</h5>
+        <p>{{ candidate.manifesto }}</p>
+      </div>
   <form method="POST" action="{% url 'cast_vote' election.election_id %}">
     {% csrf_token %}
     <input
@@ -12,7 +22,17 @@
       name="candidate_id"
       value="{{ candidate.candidate_id }}"
     />
-    <button type="submit" name="finalize_vote">Confirm</button>
+    <div class="d-flex justify-content-between">
+      <a href="{% url 'election_details' election.election_id %}" class="btn btn-secondary">
+        Cancel
+      </a>
+      <button type="submit" name="finalize_vote">Confirm</button>
+        Confirm Vote
+      </button>
+    </div>
   </form>
+ </div>
 </div>
+
+
 {% endblock %}

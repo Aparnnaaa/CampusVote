@@ -1,11 +1,43 @@
 from django.contrib.admin.views.decorators import staff_member_required
-from .utils import voter_required
+from .utils import voter_required, candidate_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.hashers import check_password
 from django.db.models import F
 from .models import Position, Voter, Election, Candidate, Vote
 
+def candidate_login(request):
+    if request.session.get("candidate_id"):
+        return redirect('candidate_dashboard')
+
+    if request.method == 'POST':
+        Candidate_id = request.POST['candidate_id']
+        password = request.POST['password']
+        try:
+            Candidate = Candidate.objects.get(candidate_id=candidate_id)
+            if check_password(password, candidate.password):
+                request.session['candidate_id'] = Candidate.candidate_id
+                return redirect('candidate_dashboard')
+            else:
+                messages.error(request, 'Invalid password')
+        except Candidate.DoesNotExist:
+            messages.error(request, 'candidate not found')
+    return render(request, 'candidate_login.html')
+
+
+@candidate_required
+def candidate_dashboard(request):
+    candidate_id = request.session.get('candidate_id')
+    if not candidate_id:
+        return redirect('candidate_login')
+    voter = Voter.objects.get(candidate_id=candidate_id)
+    return render(request, 'candidate_dashboard.html', {'candidate': candidate})
+
+
+@candidate_required
+def candidate_logout(request):
+    request.session.flush()  # Clear session data
+    return redirect('candidate_login')
 
 def voter_login(request):
     if request.session.get("voter_id"):
@@ -125,7 +157,8 @@ def cast_vote(request, election_id):
 
         # Retrieve the candidate and check election association
         candidate = get_object_or_404(
-            Candidate, pk=candidate_id, election=election)
+            Candidate, pk=candidate_id, election=election
+        )
 
         # Check if the voter has already voted for this position
         if Vote.objects.filter(
@@ -133,25 +166,26 @@ def cast_vote(request, election_id):
         ).exists():
             messages.error(
                 request,
-                f"You have already voted for the position: {
-                    candidate.position.title}."
+                f"You have already voted for the position: {candidate.position.title}."
             )
             return redirect('election_details', election_id=election_id)
 
         # Record the vote and update the candidate's vote count
         Vote.objects.create(
-            voter=voter, candidate=candidate, election=election)
+            voter=voter, candidate=candidate, election=election
+        )
         candidate.vote_count = F('vote_count') + 1  # Safe atomic increment
         candidate.save()
 
         messages.success(
             request,
-            f"Your vote for {candidate.name} as {
-                candidate.position.title} has been cast!"
+            f"Your vote for {candidate.name} as {candidate.position.title} has been cast!"
         )
-        return redirect('election_details', election_id=election_id)
+        return render(request, 'vote_success.html', {
+            'election': election,
+            'position': candidate.position,  # Pass the position from the candidate
+        })
 
-    # Redirect to vote form if the request is not a POST or missing parameters
     return redirect('vote_form', election_id=election_id)
 
 

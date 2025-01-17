@@ -1,21 +1,21 @@
 {% extends 'base.html' %}
-{% block title %}Voter Login{% endblock %}
+{% block title %}Candidate Login{% endblock %}
 
 {% block content %}
 <div class="container d-flex justify-content-center align-items-center min-vh-100">
   <div class="card shadow p-4" style="max-width: 400px; width: 100%;">
     <div class="card-body">
-      <h2 class="text-center mb-4">Voter Login</h2>
+      <h2 class="text-center mb-4">Candidate Login</h2>
       <form method="POST">
         {% csrf_token %}
         <div class="mb-3">
-          <label for="student_id" class="form-label">Student ID:</label>
+          <label for="candidate_id" class="form-label">candidate ID:</label>
           <input
             type="text"
-            name="student_id"
-            id="student_id"
+            name="candidate_id"
+            id="candidate_id"
             class="form-control"
-            placeholder="Enter your student ID"
+            placeholder="Enter your candidate ID"
             required
           />
         </div>

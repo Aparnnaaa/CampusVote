@@ -1,16 +1,16 @@
 {% extends 'base.html' %}
-{% block title %} Already Voted{% endblock %}
+{% block title %} Successfully Voted{% endblock %}
 {% block content %}
 <div class="container mt-5">
   <div class="row justify-content-center">
     <div class="col-md-6">
       <div class="card shadow">
         <div class="card-header bg-warning text-white text-center">
-          <h2 class="mb-0">Already Voted</h2>
+          <h2 class="mb-0">Successfully Voted</h2>
         </div>
         <div class="card-body">
           <p class="lead text-center">
-            you have already voted for the position:
+            you have Successfully voted for the position:
             <strong>{{ position.title }}</strong> in the election:
             <strong>{{ election.title }}</strong>
           </p>
@@ -25,6 +25,4 @@
     </div>
   </div>
   {% endblock %}
-  
-
   
