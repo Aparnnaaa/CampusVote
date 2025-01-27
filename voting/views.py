@@ -5,6 +5,19 @@ from django.contrib import messages
 from django.contrib.auth.hashers import check_password
 from django.db.models import F
 from .models import Position, Voter, Election, Candidate, Vote
+from django.shortcuts import redirect
+
+
+def voter_redirect(request):
+    """
+    Redirect to login if the user is not authenticated,
+    otherwise redirect to the voter dashboard.
+    """
+    if request.user.is_authenticated:
+        # Redirect to the dashboard if logged in
+        return redirect('voter_dashboard')
+    # Redirect to the login page if not logged in
+    return redirect('voter_login')
 
 
 def voter_login(request):
