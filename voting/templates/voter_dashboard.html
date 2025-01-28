@@ -70,7 +70,7 @@
         src="{% static 'images/voter_dashboard.jpg' %}"
         class="img-fluid rounded"
         alt="Dashboard Image">
-      />
+        />
       <form method="POST" action="{% url 'voter_logout' %}">
         {% csrf_token %}
         <button type="submit" class="btn btn-danger">Logout</button>

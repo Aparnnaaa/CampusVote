@@ -20,4 +20,11 @@ urlpatterns = [
          views.election_monitoring, name='election_monitoring'),
     path('voter/admin/election/<int:election_id>/progress/',
          views.admin_election_progress, name='admin_election_progress'),
+    path('candidate/login/',
+         views.candidate_login, name='candidate_login'),
+    path('candidate/logout/',
+         views.candidate_logout, name='candidate_logout'),
+    path('candidate/dashboard/',
+         views.candidate_dashboard, name='candidate_dashboard'),
+
 ]

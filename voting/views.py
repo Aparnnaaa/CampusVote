@@ -198,3 +198,35 @@ def admin_election_progress(request, election_id):
         'candidates': candidates,
         'total_votes': total_votes
     })
+
+
+def candidate_login(request):
+    if request.method == 'POST':
+        candidate_name = request.POST.get('name')
+        election_id = request.POST.get('election_id')
+
+        try:
+            # Authenticate candidate based on name and election
+            candidate = Candidate.objects.get(
+                name=candidate_name, election_id=election_id)
+            # Save candidate ID in session
+            request.session['candidate_id'] = candidate.candidate_id
+            return redirect('candidate_dashboard')
+        except Candidate.DoesNotExist:
+            messages.error(request, "Invalid candidate name or election ID.")
+    return render(request, 'candidate_login.html')
+
+
+def candidate_logout(request):
+    logout(request)  # Clear session and logout
+    return redirect('candidate_login')
+
+
+def candidate_dashboard(request):
+    candidate_id = request.session.get('candidate_id')
+    if not candidate_id:
+        # Redirect to login if not authenticated
+        return redirect('candidate_login')
+
+    candidate = get_object_or_404(Candidate, candidate_id=candidate_id)
+    return render(request, 'candidate_dashboard.html', {'candidate': candidate})
