@@ -1,5 +1,7 @@
 from django.contrib import admin
+from django.utils.html import format_html
 from .models import Voter, Candidate, Election, Vote, Position
+import json
 
 
 @admin.register(Voter)
@@ -24,9 +26,14 @@ class CandidateAdmin(admin.ModelAdmin):
     list_filter = ['position',  'election']
 
 
+from django.contrib import admin
+from django.utils.html import format_html
+from .models import Election, Candidate
+import json
+
 @admin.register(Election)
 class ElectionAdmin(admin.ModelAdmin):
-    list_display = ['title', 'start_date', 'end_date', 'is_active', 'show_results', 'calculate_results_button']
+    list_display = ['title', 'start_date', 'end_date', 'is_active', 'show_results']
     search_fields = ['title']
     list_filter = ['is_active']
     readonly_fields = ('results',)
@@ -38,20 +45,13 @@ class ElectionAdmin(admin.ModelAdmin):
 
             for candidate in candidates:
                 results_data[candidate.name] = candidate.vote_count
-                            election.results = results_data
+
+            election.results = results_data
             election.save()
 
         self.message_user(request, "Election results have been calculated and saved.")
 
     calculate_results.short_description = "Calculate and Save Election Results"
-
-    def calculate_results_button(self, obj):
-        return format_html(
-            '<a class="button" href="{}">Calculate Results</a>',
-            f"calculate-results/{obj.pk}"
-        )
-    calculate_results_button.allow_tags = True
-    calculate_results_button.short_description = "Calculate Results"
 
     def show_results(self, obj):
         if obj.results:
@@ -60,9 +60,9 @@ class ElectionAdmin(admin.ModelAdmin):
 
     show_results.short_description = "Election Results"
 
-    actions = [calculate_results]  # Add the custom action
+    actions = [calculate_results]  # Register the action
 
-                
+
 
 @admin.register(Vote)
 class VoteAdmin(admin.ModelAdmin):

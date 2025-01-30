@@ -238,6 +238,7 @@ def candidate_dashboard(request):
 
 def election_results(request, election_id):
     election = get_object_or_404(Election, pk=election_id)
+    return render(request, 'election_results.html', {'election': election})
 
     # Use a different annotation name to avoid conflicts
     candidates = Candidate.objects.annotate(total_votes=Count('vote'))
