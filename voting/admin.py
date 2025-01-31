@@ -26,10 +26,43 @@ class CandidateAdmin(admin.ModelAdmin):
 
 @admin.register(Election)
 class ElectionAdmin(admin.ModelAdmin):
-    list_display = ['title', 'start_date', 'end_date', 'is_active']
+    list_display = ['title', 'start_date', 'end_date', 'is_active', 'show_results', 'calculate_results_button']
     search_fields = ['title']
     list_filter = ['is_active']
+    readonly_fields = ('results',)
 
+    def calculate_results(self, request, queryset):
+        for election in queryset:
+            results_data = {}
+            candidates = Candidate.objects.filter(election=election)
+
+            for candidate in candidates:
+                results_data[candidate.name] = candidate.vote_count
+                            election.results = results_data
+            election.save()
+
+        self.message_user(request, "Election results have been calculated and saved.")
+
+    calculate_results.short_description = "Calculate and Save Election Results"
+
+    def calculate_results_button(self, obj):
+        return format_html(
+            '<a class="button" href="{}">Calculate Results</a>',
+            f"calculate-results/{obj.pk}"
+        )
+    calculate_results_button.allow_tags = True
+    calculate_results_button.short_description = "Calculate Results"
+
+    def show_results(self, obj):
+        if obj.results:
+            return json.dumps(obj.results, indent=4)
+        return "Results not yet calculated"
+
+    show_results.short_description = "Election Results"
+
+    actions = [calculate_results]  # Add the custom action
+
+                
 
 @admin.register(Vote)
 class VoteAdmin(admin.ModelAdmin):

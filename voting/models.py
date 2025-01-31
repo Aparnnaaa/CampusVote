@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.hashers import make_password
+import json
 
 
 
@@ -49,6 +50,7 @@ class Election(models.Model):
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     is_active = models.BooleanField()
+    results = models.JSONField(null=True, blank=True)
 
     def __str__(self):
         return self.title
