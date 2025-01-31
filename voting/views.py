@@ -1,3 +1,6 @@
+from django.shortcuts import render, get_object_or_404
+from .models import Election, Candidate
+from collections import defaultdict
 from django.contrib.admin.views.decorators import staff_member_required
 from .utils import voter_required
 from django.shortcuts import render, redirect, get_object_or_404
@@ -6,6 +9,7 @@ from django.contrib.auth.hashers import check_password
 from django.db.models import F
 from .models import Position, Voter, Election, Candidate, Vote
 from django.shortcuts import redirect
+from django.db.models import Count
 
 
 def voter_redirect(request):
@@ -230,3 +234,20 @@ def candidate_dashboard(request):
 
     candidate = get_object_or_404(Candidate, candidate_id=candidate_id)
     return render(request, 'candidate_dashboard.html', {'candidate': candidate})
+
+
+def election_results(request, election_id):
+    election = get_object_or_404(Election, pk=election_id)
+
+    # Use a different annotation name to avoid conflicts
+    candidates = Candidate.objects.annotate(total_votes=Count('vote'))
+
+    # Group candidates by position
+    positions = defaultdict(list)
+    for candidate in candidates:
+        positions[candidate.position.title].append(candidate)
+
+    return render(request, 'election_results.html', {
+        'election': election,
+        'positions': positions,
+    })

@@ -1,0 +1,32 @@
+{% extends 'base.html' %} 
+{% block title %}Results - {{ election.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h1 class="text-center">{{ election.title }} - Results</h1>
+
+  {% for position, candidates in positions.items %}
+    <div class="card mt-3">
+      <div class="card-header bg-primary text-white">
+        <h4>{{ position }} - Results</h4>
+      </div>
+      <ul class="list-group list-group-flush">
+        {% for candidate in candidates|dictsortreversed:"total_votes" %}
+        <li class="list-group-item">
+          <strong>{{ candidate.name }}</strong> - {{ candidate.total_votes }} votes
+
+          {% if forloop.first %}
+          <span class="badge bg-success">Winner</span>
+          {% endif %}
+          
+        </li>
+        {% empty %}
+        <li class="list-group-item">No candidates available for this position.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% empty %}
+  <p>No positions found for this election.</p>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Candidate Dashboard</title>
+</head>
+<body>
+    <h1>Welcome, {{ candidate.name }}</h1>
+    <p>You are running for the position of {{ candidate.position.title }} in the "{{ candidate.election.title }}" election.</p>
+    <p>Your current vote count: {{ candidate.vote_cont }}</p>
+    <a href="{% url 'candidate_logout' %}">Logout</a>
+</body>
+</html>
