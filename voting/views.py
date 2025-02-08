@@ -10,6 +10,8 @@ from django.db.models import F
 from .models import Position, Voter, Election, Candidate, Vote
 from django.shortcuts import redirect
 from django.db.models import Count
+from .forms import CandidateProfileForm
+from django.core.exceptions import ObjectDoesNotExist
 
 
 def home(request):
