@@ -12,6 +12,10 @@ from django.shortcuts import redirect
 from django.db.models import Count
 
 
+def home(request):
+    return render(request, "home.html")
+
+
 def voter_redirect(request):
     """
     Redirect to login if the user is not authenticated,
@@ -25,6 +29,7 @@ def voter_redirect(request):
 
 
 def voter_login(request):
+    print("Voter login view triggered")  # Debugging statement
     if request.session.get("voter_id"):
         return redirect('voter_dashboard')
 
@@ -117,7 +122,7 @@ def vote_form(request, election_id, position_id):
     })
 
 
-@ voter_required
+@voter_required
 def confirm_vote(request, election_id):
     if request.method == 'POST':
         candidate_id = request.POST.get('candidate_id')
