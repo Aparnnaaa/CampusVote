@@ -36,19 +36,17 @@ class Candidate(models.Model):
     election = models.ForeignKey(
         'election', on_delete=models.CASCADE, related_name='candidates')
     vote_count = models.IntegerField(default=0)
-    password = models.CharField(max_length=255)  # Store hashed password
+
+    password = models.CharField(max_length=128, blank=True)
 
     def set_password(self, raw_password):
-        """Hashes and sets the password."""
         self.password = make_password(raw_password)
-        self.save()
 
     def check_password(self, raw_password):
-        """Checks if the given password matches the hashed password."""
         return check_password(raw_password, self.password)
 
     def __str__(self):
-        return f"{self.name} - {self.position.title}"  # Timestamp of creation
+        return f"{self.name} - {self.position.title}"
 
 
 class Election(models.Model):
