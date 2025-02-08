@@ -232,7 +232,26 @@ def candidate_logout(request):
 
 
 def candidate_dashboard(request):
-    return render(request, 'candidate_dashboard.html')
+    candidate_id = request.session.get('candidate_id')
+    if not candidate_id:
+        return redirect('candidate_login')
+
+    try:
+        candidate = Candidate.objects.get(candidate_id=candidate_id)
+    except ObjectDoesNotExist:
+        messages.error(request, "Candidate not found")
+        return redirect('candidate_login')
+
+    if request.method == 'POST':
+        form = CandidateProfileForm(
+            request.POST, request.FILES, instance=candidate)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile updated successfully!")
+            return redirect('candidate_dashboard')
+    else:
+        form = CandidateProfileForm(instance=candidate)
+    return render(request, 'candidate_dashboard.html', {'candidate': candidate, 'form': form})
 
 
 def election_results(request, election_id):

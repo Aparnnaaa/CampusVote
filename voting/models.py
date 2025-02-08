@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import make_password, check_password
+
 
 class Voter(models.Model):
     voter_id = models.AutoField(primary_key=True)
@@ -35,6 +36,16 @@ class Candidate(models.Model):
     election = models.ForeignKey(
         'election', on_delete=models.CASCADE, related_name='candidates')
     vote_count = models.IntegerField(default=0)
+    password = models.CharField(max_length=255)  # Store hashed password
+
+    def set_password(self, raw_password):
+        """Hashes and sets the password."""
+        self.password = make_password(raw_password)
+        self.save()
+
+    def check_password(self, raw_password):
+        """Checks if the given password matches the hashed password."""
+        return check_password(raw_password, self.password)
 
     def __str__(self):
         return f"{self.name} - {self.position.title}"  # Timestamp of creation
@@ -81,4 +92,3 @@ class Position(models.Model):
 
     def __str__(self):
         return self.title
-
