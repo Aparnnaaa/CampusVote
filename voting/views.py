@@ -232,28 +232,9 @@ def candidate_logout(request):
 
 
 def candidate_dashboard(request):
-    candidate_id = request.session.get('candidate_id')
-    if not candidate_id:
-        # Redirect to login if not authenticated
-        return redirect('candidate_login')
-
-    candidate = get_object_or_404(Candidate, candidate_id=candidate_id)
-    return render(request, 'candidate_dashboard.html', {'candidate': candidate})
+    return render(request, 'candidate_dashboard.html')
 
 
 def election_results(request, election_id):
     election = get_object_or_404(Election, pk=election_id)
     return render(request, 'election_results.html', {'election': election})
-
-    # Use a different annotation name to avoid conflicts
-    candidates = Candidate.objects.annotate(total_votes=Count('vote'))
-
-    # Group candidates by position
-    positions = defaultdict(list)
-    for candidate in candidates:
-        positions[candidate.position.title].append(candidate)
-
-    return render(request, 'election_results.html', {
-        'election': election,
-        'positions': positions,
-    })
