@@ -5,8 +5,23 @@
 </head>
 <body>
     <h1>Welcome, {{ candidate.name }}</h1>
-    <p>You are running for the position of {{ candidate.position.title }} in the "{{ candidate.election.title }}" election.</p>
-    <p>Your current vote count: {{ candidate.vote_cont }}</p>
+    <p>You are running for the position of <strong>{{ candidate.position.title }}</strong> in the "<strong>{{ candidate.election.title }}</strong>" election.</p>
+    <p>Your current vote count: {{ candidate.vote_count }}</p>
+    <h2>Edit Profile</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Update Profile</button>
+    </form>
+
+    <h2>Profile Picture</h2>
+    {% if candidate.photo %}
+        <img src="{{ candidate.photo.url }}" alt="Profile Picture" width="150">
+    {% else %}
+        <p>No profile picture uploaded.</p>
+    {% endif %}
+
+    <br><br>
     <a href="{% url 'candidate_logout' %}">Logout</a>
 </body>
 </html>

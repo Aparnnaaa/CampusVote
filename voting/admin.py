@@ -38,7 +38,7 @@ class ElectionAdmin(admin.ModelAdmin):
 
             for candidate in candidates:
                 results_data[candidate.name] = candidate.vote_count
-                            election.results = results_data
+            election.results = results_data
             election.save()
 
         self.message_user(request, "Election results have been calculated and saved.")
