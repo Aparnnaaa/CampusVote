@@ -1,8 +1,6 @@
 from django.db import models
 from django.utils import timezone
-from django.contrib.auth.hashers import make_password
-import json
-
+from django.contrib.auth.hashers import make_password, check_password
 
 
 class Voter(models.Model):
@@ -39,8 +37,16 @@ class Candidate(models.Model):
         'election', on_delete=models.CASCADE, related_name='candidates')
     vote_count = models.IntegerField(default=0)
 
+    password = models.CharField(max_length=128, blank=True)
+
+    def set_password(self, raw_password):
+        self.password = make_password(raw_password)
+
+    def check_password(self, raw_password):
+        return check_password(raw_password, self.password)
+
     def __str__(self):
-        return f"{self.name} - {self.position.title}"  # Timestamp of creation
+        return f"{self.name} - {self.position.title}"
 
 
 class Election(models.Model):
@@ -84,4 +90,3 @@ class Position(models.Model):
 
     def __str__(self):
         return self.title
-

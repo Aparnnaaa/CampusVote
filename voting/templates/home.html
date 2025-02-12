@@ -1,0 +1,81 @@
+{% extends "base.html" %} 
+{% block title %}Home - CampusVote{% endblock %} 
+
+{% block content %}
+<style>
+  /* Custom CSS for centering and fixed height */
+  .homepage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Full viewport height */
+    padding: 20px;
+    background-color: #f8f9fa; /* Light background */
+  }
+  .homepage .container {
+    text-align: center;
+  }
+  .option-card {
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  .option-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+  .option-card i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    color: #007bff; /* Bootstrap primary color */
+  }
+  .option-card h3 {
+    margin-bottom: 10px;
+    color: #333;
+  }
+  .option-card p {
+    color: #666;
+  }
+  .option-card .btn {
+    margin-top: 15px;
+  }
+  .option-card .btn a {
+    color: #fff;
+    text-decoration: none;
+  }
+</style>
+
+<div class="homepage">
+  <div class="container">
+    <h1 class="mb-4">Welcome to CampusVote</h1>
+    <p class="lead mb-5">Please select your role to proceed:</p>
+    <div class="row justify-content-center">
+      <div class="col-md-5 mb-4">
+        <div class="card option-card">
+          <i class="fas fa-user-check"></i>
+          <h3>Voter</h3>
+          <p>Participate in ongoing elections and cast your vote.</p>
+          <a href="{% url 'voter_login' %}">
+                <button class="btn btn-primary w-100">Select Voter</button>
+            </a>
+        </div>
+      </div>
+      <div class="col-md-5 mb-4">
+        <div class="card option-card">
+          <i class="fas fa-user-tie" style="color: #198754;"></i>
+          <h3>Candidate</h3>
+          <p>View candidate profile and verify yourself.</p>
+          <a href="{% url 'candidate_login' %}">
+              <button class="btn btn-success w-100">Select Candidate </button>
+            </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -10,6 +10,12 @@ from django.db.models import F
 from .models import Position, Voter, Election, Candidate, Vote
 from django.shortcuts import redirect
 from django.db.models import Count
+from .forms import CandidateProfileForm
+from django.core.exceptions import ObjectDoesNotExist
+
+
+def home(request):
+    return render(request, "home.html")
 
 
 def voter_redirect(request):
@@ -25,6 +31,7 @@ def voter_redirect(request):
 
 
 def voter_login(request):
+    print("Voter login view triggered")  # Debugging statement
     if request.session.get("voter_id"):
         return redirect('voter_dashboard')
 
@@ -117,7 +124,7 @@ def vote_form(request, election_id, position_id):
     })
 
 
-@ voter_required
+@voter_required
 def confirm_vote(request, election_id):
     if request.method == 'POST':
         candidate_id = request.POST.get('candidate_id')
@@ -229,25 +236,26 @@ def candidate_logout(request):
 def candidate_dashboard(request):
     candidate_id = request.session.get('candidate_id')
     if not candidate_id:
-        # Redirect to login if not authenticated
         return redirect('candidate_login')
 
-    candidate = get_object_or_404(Candidate, candidate_id=candidate_id)
-    return render(request, 'candidate_dashboard.html', {'candidate': candidate})
+    try:
+        candidate = Candidate.objects.get(candidate_id=candidate_id)
+    except ObjectDoesNotExist:
+        messages.error(request, "Candidate not found")
+        return redirect('candidate_login')
+
+    if request.method == 'POST':
+        form = CandidateProfileForm(
+            request.POST, request.FILES, instance=candidate)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile updated successfully!")
+            return redirect('candidate_dashboard')
+    else:
+        form = CandidateProfileForm(instance=candidate)
+    return render(request, 'candidate_dashboard.html', {'candidate': candidate, 'form': form})
 
 
 def election_results(request, election_id):
     election = get_object_or_404(Election, pk=election_id)
-
-    # Use a different annotation name to avoid conflicts
-    candidates = Candidate.objects.annotate(total_votes=Count('vote'))
-
-    # Group candidates by position
-    positions = defaultdict(list)
-    for candidate in candidates:
-        positions[candidate.position.title].append(candidate)
-
-    return render(request, 'election_results.html', {
-        'election': election,
-        'positions': positions,
-    })
+    return render(request, 'election_results.html', {'election': election})
