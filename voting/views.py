@@ -217,23 +217,21 @@ def candidate_login(request):
         election_id = request.POST.get('election_id')
         password = request.POST.get('password')
 
-
         try:
             # Authenticate candidate based on name and election
             candidate = Candidate.objects.get(
                 name=candidate_name, election_id=election_id)
-            #verify password
+            # verify password
             if candidate.check_password(password):
                 request.session['candidate_id'] = candidate.candidate_id
                 return redirect('candidate_dashboard')
             else:
                 messages.error(request, "Invalid password.")
-        except Candidate.DoesNotExist:
-            messages.error(request, "Invalid candidate name or election ID.")
+
             # Save candidate ID in session
             request.session['candidate_id'] = candidate.candidate_id
             return redirect('candidate_dashboard')
-        
+
         except Candidate.DoesNotExist:
             messages.error(request, "Invalid candidate name or election ID.")
     return render(request, 'candidate_login.html')
