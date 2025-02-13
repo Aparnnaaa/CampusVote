@@ -213,14 +213,12 @@ def admin_election_progress(request, election_id):
 
 def candidate_login(request):
     if request.method == 'POST':
-        candidate_name = request.POST.get('name')
-        election_id = request.POST.get('election_id')
+        candidate_id= request.POST.get('candidate_id')
         password = request.POST.get('password')
 
         try:
             # Authenticate candidate based on name and election
-            candidate = Candidate.objects.get(
-                name=candidate_name, election_id=election_id)
+            candidate = Candidate.objects.get(candidate_id=candidate_id)
             # verify password
             if candidate.check_password(password):
                 request.session['candidate_id'] = candidate.candidate_id
@@ -231,7 +229,7 @@ def candidate_login(request):
             return redirect('candidate_dashboard')
 
         except Candidate.DoesNotExist:
-            messages.error(request, "Invalid candidate name or election ID.")
+            messages.error(request, "Invalid candidate ID.")
     return render(request, 'candidate_login.html')
 
 
