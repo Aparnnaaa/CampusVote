@@ -26,8 +26,6 @@ class Voter(models.Model):
 
 class Candidate(models.Model):
     candidate_id = models.AutoField(primary_key=True)
-    registration_number = models.CharField(max_length=20, unique=True, blank=True, null=True)
-
     name = models.CharField(max_length=100)
     manifesto = models.TextField()
     department = models.CharField(max_length=100)
@@ -39,20 +37,12 @@ class Candidate(models.Model):
         'election', on_delete=models.CASCADE, related_name='candidates')
     vote_count = models.IntegerField(default=0)
 
-    password = models.CharField(max_length=128, blank=True)
+    password = models.CharField(max_length=128)
 
-    def set_password(self, raw_password):
-        self.password = make_password(raw_password)
-
-    def check_password(self, raw_password):
-        return check_password(raw_password, self.password)
-    
     def save(self, *args, **kwargs):
-        # Auto-generate registration_number if blank
-        if not self.registration_number:
-            self.registration_number = f"REG{self.candidate_id:05d}"
+        if not self.pk:
+            self.password = make_password(self.password)
         super().save(*args, **kwargs)
-
 
     def __str__(self):
         return f"{self.name} - {self.position.title}"

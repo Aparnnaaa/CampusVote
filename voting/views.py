@@ -182,54 +182,26 @@ def cast_vote(request, election_id):
 
     return redirect('vote_form', election_id=election_id)
 
-
-def election_monitoring(request, election_id):
-    election = get_object_or_404(Election, pk=election_id)
-    total_voters = Voter.objects.filter(is_verified=True).count()
-    votes_cast = Vote.objects.filter(election=election).count()
-    turnout_percentage = (votes_cast / total_voters) * \
-        100 if total_voters > 0 else 0
-
-    return render(request, 'election_monitoring.html', {
-        'election': election,
-        'votes_cast': votes_cast,
-        'total_voters': total_voters,
-        'turnout_percentage': turnout_percentage
-    })
-
-
-@staff_member_required
-def admin_election_progress(request, election_id):
-    election = get_object_or_404(Election, pk=election_id)
-    candidates = election.candidates.all().order_by('-vote_count')  # Sort by votes
-    total_votes = Vote.objects.filter(election=election).count()
-
-    return render(request, 'admin_election_progress.html', {
-        'election': election,
-        'candidates': candidates,
-        'total_votes': total_votes
-    })
+# Candidate Views
 
 
 def candidate_login(request):
     if request.method == 'POST':
-        candidate_id= request.POST.get('candidate_id')
+        candidate_id = request.POST.get('candidate_id')
         password = request.POST.get('password')
 
         try:
-            # Authenticate candidate based on name and election
             candidate = Candidate.objects.get(candidate_id=candidate_id)
-            # verify password
-            if candidate.check_password(password):
+
+            if check_password(password, candidate.password):
                 request.session['candidate_id'] = candidate.candidate_id
                 return redirect('candidate_dashboard')
             else:
                 messages.error(request, "Invalid password.")
-            # Save candidate ID in session
-            return redirect('candidate_dashboard')
 
         except Candidate.DoesNotExist:
             messages.error(request, "Invalid candidate ID.")
+
     return render(request, 'candidate_login.html')
 
 
@@ -259,6 +231,34 @@ def candidate_dashboard(request):
     else:
         form = CandidateProfileForm(instance=candidate)
     return render(request, 'candidate_dashboard.html', {'candidate': candidate, 'form': form})
+
+
+def election_monitoring(request, election_id):
+    election = get_object_or_404(Election, pk=election_id)
+    total_voters = Voter.objects.filter(is_verified=True).count()
+    votes_cast = Vote.objects.filter(election=election).count()
+    turnout_percentage = (votes_cast / total_voters) * \
+        100 if total_voters > 0 else 0
+
+    return render(request, 'election_monitoring.html', {
+        'election': election,
+        'votes_cast': votes_cast,
+        'total_voters': total_voters,
+        'turnout_percentage': turnout_percentage
+    })
+
+
+@staff_member_required
+def admin_election_progress(request, election_id):
+    election = get_object_or_404(Election, pk=election_id)
+    candidates = election.candidates.all().order_by('-vote_count')  # Sort by votes
+    total_votes = Vote.objects.filter(election=election).count()
+
+    return render(request, 'admin_election_progress.html', {
+        'election': election,
+        'candidates': candidates,
+        'total_votes': total_votes
+    })
 
 
 def election_results(request, election_id):
