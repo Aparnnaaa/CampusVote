@@ -14,10 +14,8 @@
     {% endif %}
     <form method="POST">
         {% csrf_token %}
-        <label for="name">Candidate Name:</label>
-        <input type="text" name="name" id="name" required><br>
-        <label for="election_id">Election ID:</label>
-        <input type="text" name="election_id" id="election_id" required><br>
+        <label for="candidate_id">Candidate ID:</label>
+        <input type="number" name="election_id" id="candidate_id" required><br>
         <label for="password">password:</label>
         <input type="password" name="password" id="password" required><br>
         <button type="submit">Login</button>

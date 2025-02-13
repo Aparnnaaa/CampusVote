@@ -21,9 +21,12 @@ class PositionAdmin(admin.ModelAdmin):
 
 @admin.register(Candidate)
 class CandidateAdmin(admin.ModelAdmin):
-    list_display = ['name', 'position', 'department', 'election', 'vote_count']
-    search_fields = ['name', 'position_title', 'department']
-    list_filter = ['position',  'election']
+    list_display = ['candidate_id','name', 'position', 'department', 'election', 'vote_count']
+    search_fields = ['candidate_id','registration -number','name', 'position_title', 'department']
+    list_filter = ['department','position',  'election']
+
+admin.site.register(Candidate, CandidateAdmin)
+
 
 
 from django.contrib import admin

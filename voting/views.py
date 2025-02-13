@@ -227,9 +227,7 @@ def candidate_login(request):
                 return redirect('candidate_dashboard')
             else:
                 messages.error(request, "Invalid password.")
-
             # Save candidate ID in session
-            request.session['candidate_id'] = candidate.candidate_id
             return redirect('candidate_dashboard')
 
         except Candidate.DoesNotExist:
