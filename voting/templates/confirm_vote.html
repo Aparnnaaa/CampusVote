@@ -1,38 +1,52 @@
-{% extends 'base.html' %} 
+{% extends 'base.html' %}
 {% block title %} Confirm Your Vote {% endblock %}
 {% block content %}
 <div class="container mt-5">
-  <div class="card shadow">
-    <div class="card-header bg-primary text-white">
-      <h1>Confirm Your Vote</h1>
-    </div>
-    <div class="card-body">
-      <p class="lead">
-        You are voting for <strong>{{ candidate.name }}</strong> in the election:
-        <strong>{{ election.title }}</strong>
-      </p>
-      <div class="mb-3">
-        <h5>Candidate's Manifesto</h5>
-        <p>{{ candidate.manifesto }}</p>
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card border-0 shadow-lg">
+        <div class="card-header bg-primary text-white text-center py-4">
+          <i class="fas fa-check-circle fa-3x mb-3"></i>
+          <h1 class="h2 font-weight-bold mb-0">Confirm Your Vote</h1>
+        </div>
+        <div class="card-body p-4">
+          <div class="text-center mb-4">
+            <p class="lead text-muted">
+              You are voting in the election:
+              <span class="d-block text-dark h4 mt-2">{{ election.title }}</span>
+            </p>
+          </div>
+
+          <div class="alert alert-success border-success mb-4">
+            <h5 class="alert-heading">
+              <i class="fas fa-user-check me-2"></i>
+              Selected Candidate
+            </h5>
+            <hr>
+            <h4 class="mb-2">{{ candidate.name }}</h4>
+            <p class="mb-0 text-muted">{{ candidate.manifesto }}</p>
+          </div>
+
+          <form method="POST" action="{% url 'cast_vote' election.election_id %}">
+            {% csrf_token %}
+            <input type="hidden" name="candidate_id" value="{{ candidate.candidate_id }}">
+            
+            <div class="d-grid gap-2 d-md-flex justify-content-md-between mt-4">
+              <a href="{% url 'election_details' election.election_id %}" 
+                 class="btn btn-outline-secondary btn-lg rounded-pill w-100">
+                <i class="fas fa-times-circle me-2"></i>
+                Cancel
+              </a>
+              <button type="submit" name="finalize_vote" 
+                      class="btn btn-success btn-lg rounded-pill w-100">
+                <i class="fas fa-check-circle me-2"></i>
+                Confirm Vote
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-  <form method="POST" action="{% url 'cast_vote' election.election_id %}">
-    {% csrf_token %}
-    <input
-      type="hidden"
-      name="candidate_id"
-      value="{{ candidate.candidate_id }}"
-    />
-    <div class="d-flex justify-content-between">
-      <a href="{% url 'election_details' election.election_id %}" class="btn btn-secondary">
-        Cancel
-      </a>
-      <button type="submit" name="finalize_vote">Confirm</button>
-        Confirm Vote
-      </button>
     </div>
-  </form>
- </div>
+  </div>
 </div>
-
-
 {% endblock %}
