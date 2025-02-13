@@ -12,6 +12,7 @@ from django.shortcuts import redirect
 from django.db.models import Count
 from .forms import CandidateProfileForm
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth import logout
 
 
 def home(request):

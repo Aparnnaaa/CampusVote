@@ -10,4 +10,4 @@ class VoterLoginForm(forms.Form):
 class CandidateProfileForm(forms.ModelForm):
     class Meta:
         model = Candidate
-        fields = ['name', 'manifesto', 'photo']
+        fields = ['manifesto', 'photo']

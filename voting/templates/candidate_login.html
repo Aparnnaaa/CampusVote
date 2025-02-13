@@ -1,29 +1,140 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Candidate Login</title>
-  </head>
-  <body>
-    <h1>Candidate Login</h1>
-    {% if messages %}
-    <ul>
-      {% for message in messages %}
-      <li>{{ message }}</li>
-      {% endfor %}
-    </ul>
-    {% endif %}
-    <form method="POST">
-      {% csrf_token %}
-      <label for="candidate_id">Candidate ID:</label>
-      <input
-        type="number"
-        name="candidate_id"
-        id="candidate_id"
-        required
-      /><br />
-      <label for="password">Password:</label>
-      <input type="password" name="password" id="password" required /><br />
-      <button type="submit">Login</button>
-    </form>
-  </body>
-</html>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg">
+                <div class="card-body p-4">
+                    <!-- Login Header -->
+                    <div class="text-center mb-4">
+                        <i class="fas fa-user-tie fa-4x text-primary mb-3"></i>
+                        <h1 class="h3">Candidate Login</h1>
+                        <p class="text-muted">Enter your credentials to access your dashboard</p>
+                    </div>
+
+                    <!-- Messages -->
+                    {% if messages %}
+                    <div class="alert alert-dismissible fade show" role="alert">
+                        {% for message in messages %}
+                        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Login Form -->
+                    <form method="POST" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Candidate ID Field -->
+                        <div class="mb-3">
+                            <label for="candidate_id" class="form-label">
+                                <i class="fas fa-id-card me-2"></i>Candidate ID
+                            </label>
+                            <input
+                                type="number"
+                                name="candidate_id"
+                                id="candidate_id"
+                                class="form-control"
+                                placeholder="Enter your Candidate ID"
+                                required
+                            />
+                            <div class="invalid-feedback">
+                                Please enter your Candidate ID.
+                            </div>
+                        </div>
+
+                        <!-- Password Field -->
+                        <div class="mb-4">
+                            <label for="password" class="form-label">
+                                <i class="fas fa-lock me-2"></i>Password
+                            </label>
+                            <input
+                                type="password"
+                                name="password"
+                                id="password"
+                                class="form-control"
+                                placeholder="Enter your password"
+                                required
+                            />
+                            <div class="invalid-feedback">
+                                Please enter your password.
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-sign-in-alt me-2"></i>Login
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom Styles */
+    .card {
+        border-radius: 15px;
+        border: none;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        padding: 12px;
+    }
+
+    .form-control:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+        padding: 12px;
+        border-radius: 10px;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .alert {
+        border-radius: 10px;
+    }
+
+    .invalid-feedback {
+        display: none;
+        color: #dc3545;
+    }
+
+    .was-validated .form-control:invalid ~ .invalid-feedback {
+        display: block;
+    }
+</style>
+
+<script>
+    // Bootstrap form validation
+    (function () {
+        'use strict';
+        var forms = document.querySelectorAll('.needs-validation');
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+</script>
+{% endblock %}
