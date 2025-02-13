@@ -21,25 +21,20 @@ class PositionAdmin(admin.ModelAdmin):
 
 @admin.register(Candidate)
 class CandidateAdmin(admin.ModelAdmin):
-    list_display = ['candidate_id','name', 'position', 'department', 'election', 'vote_count']
-    search_fields = ['candidate_id','registration -number','name', 'position_title', 'department']
-    list_filter = ['department','position',  'election']
+    list_display = ['candidate_id', 'name', 'position',
+                    'department', 'election', 'vote_count']
+    search_fields = ['candidate_id', 'registration_number',
+                     'name', 'position__title', 'department']
+    list_filter = ['department', 'position', 'election']
 
-admin.site.register(Candidate, CandidateAdmin)
-
-
-
-from django.contrib import admin
-from django.utils.html import format_html
-from .models import Election, Candidate
-import json
 
 @admin.register(Election)
 class ElectionAdmin(admin.ModelAdmin):
-    list_display = ['title', 'start_date', 'end_date', 'is_active', 'show_results']
+    list_display = ['title', 'start_date',
+                    'end_date', 'is_active', 'show_results']
     search_fields = ['title']
     list_filter = ['is_active']
-    readonly_fields = ('results',)
+    readonly_fields = []  # Ensure 'results' is removed if not a model field
 
     def calculate_results(self, request, queryset):
         for election in queryset:
@@ -48,24 +43,26 @@ class ElectionAdmin(admin.ModelAdmin):
 
             for candidate in candidates:
                 results_data[candidate.name] = candidate.vote_count
-            election.results = results_data
 
+            # Assuming 'results' is a JSONField in the Election model
             election.results = results_data
             election.save()
 
-        self.message_user(request, "Election results have been calculated and saved.")
+        self.message_user(
+            request, "Election results have been calculated and saved.")
 
     calculate_results.short_description = "Calculate and Save Election Results"
 
     def show_results(self, obj):
         if obj.results:
-            return json.dumps(obj.results, indent=4)
+            # Assuming 'results' is a dictionary (JSONField in model)
+            formatted_results = json.dumps(obj.results, indent=4)
+            return format_html(f"<pre>{formatted_results}</pre>")
         return "Results not yet calculated"
 
     show_results.short_description = "Election Results"
 
     actions = [calculate_results]  # Register the action
-
 
 
 @admin.register(Vote)
