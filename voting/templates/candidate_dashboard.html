@@ -1,27 +1,137 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Candidate Dashboard</title>
-</head>
-<body>
-    <h1>Welcome, {{ candidate.name }}</h1>
-    <p>You are running for the position of <strong>{{ candidate.position.title }}</strong> in the "<strong>{{ candidate.election.title }}</strong>" election.</p>
-    <p>Your current vote count: {{ candidate.vote_count }}</p>
-    <h2>Edit Profile</h2>
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Update Profile</button>
-    </form>
+{% extends 'base.html' %}
+{% load static %}
 
-    <h2>Profile Picture</h2>
-    {% if candidate.photo %}
-        <img src="{{ candidate.photo.url }}" alt="Profile Picture" width="150">
-    {% else %}
-        <p>No profile picture uploaded.</p>
-    {% endif %}
+{% block content %}
+<div class="container mt-5">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-user-tie fa-3x text-primary me-3"></i>
+                <div>
+                    <h1>Welcome, {{ candidate.name }}</h1>
+                    <p class="lead">
+                        <i class="fas fa-vote-yea text-secondary"></i>
+                        Running for <strong>{{ candidate.position.title }}</strong> in
+                        <strong>"{{ candidate.election.title }}"</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <br><br>
-    <a href="{% url 'candidate_logout' %}">Logout</a>
-</body>
-</html>
+    <div class="row">
+        <!-- Profile Info Column -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h3 class="card-title mb-4">
+                        <i class="fas fa-id-card me-2"></i>Profile
+                    </h3>
+                    
+                    <!-- Profile Photo -->
+                    <div class="text-center mb-4">
+                        {% if candidate.photo %}
+                            <img src="{{ candidate.photo.url }}" 
+                                 class="img-thumbnail rounded-circle" 
+                                 alt="Profile Picture" 
+                                 style="width: 150px; height: 150px; object-fit: cover;">
+                        {% else %}
+                            <div class="bg-light rounded-circle d-inline-block p-4">
+                                <i class="fas fa-camera fa-3x text-secondary"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Election Details -->
+                    <div class="alert alert-info">
+                        <h5><i class="fas fa-info-circle me-2"></i>Election Details</h5>
+                        <p class="mb-0">
+                            Status: <span class="badge bg-primary">Active</span><br>
+                            Voting Period: {{ candidate.election.start_date }} - {{ candidate.election.end_date }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Profile Column -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title mb-4">
+                        <i class="fas fa-edit me-2"></i>Edit Profile
+                    </h3>
+
+                    <!-- Profile Form -->
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Manifesto Field -->
+                        <div class="mb-4">
+                            <label for="id_manifesto" class="form-label">
+                                <i class="fas fa-file-alt me-2"></i>Manifesto
+                            </label>
+                            {{ form.manifesto }}
+                            {% if form.manifesto.errors %}
+                                <div class="text-danger mt-1">
+                                    {{ form.manifesto.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Photo Upload Field -->
+                        <div class="mb-4">
+                            <label for="id_photo" class="form-label">
+                                <i class="fas fa-camera me-2"></i>Profile Photo
+                            </label>
+                            <div class="input-group">
+                                {{ form.photo }}
+                                <label class="input-group-text btn btn-outline-secondary" for="id_photo">
+                                    Choose File
+                                </label>
+                            </div>
+                            {% if form.photo.errors %}
+                                <div class="text-danger mt-1">
+                                    {{ form.photo.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-save me-2"></i>Update Profile
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom Styles */
+    .card {
+        border-radius: 15px;
+        transition: transform 0.2s;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+    }
+
+    textarea {
+        height: 200px;
+        resize: vertical;
+    }
+
+    .form-control:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    .input-group-text {
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
