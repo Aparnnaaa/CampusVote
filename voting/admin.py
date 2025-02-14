@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from django.db.models import Count
 from .models import Voter, Candidate, Election, Vote, Position
 import json
 
@@ -28,11 +29,6 @@ class CandidateAdmin(admin.ModelAdmin):
     list_filter = ['department', 'position', 'election']
 
 
-import json
-from django.contrib import admin
-from django.utils.html import format_html
-from .models import Election, Candidate
-
 @admin.register(Election)
 class ElectionAdmin(admin.ModelAdmin):
     list_display = ['title', 'start_date', 'end_date', 'is_active', 'show_results']
@@ -41,26 +37,19 @@ class ElectionAdmin(admin.ModelAdmin):
     readonly_fields = []  # Ensure 'results' is removed if not a model field
 
     def calculate_results(self, request, queryset):
-        print("Starting results calculation...")  # Debugging
-
         for election in queryset:
-            print(f"Processing election: {election.title}")  # Debugging
             results_data = {}
-            candidates = Candidate.objects.filter(election=election)
-
+            # Use annotation to count related Vote objects for each candidate.
+            candidates = Candidate.objects.filter(election=election).annotate(vote_total=Count('vote'))
             for candidate in candidates:
-                print(f"Candidate: {candidate.name}, Votes: {candidate.vote_count}")  # Debugging
-                results_data[candidate.name] = candidate.vote_count
-
-            # Assuming 'results' is a JSONField in the Election model
+                print(f"Candidate: {candidate.name}, Votes: {candidate.vote_total}")  # Debug print
+                results_data[candidate.name] = candidate.vote_total
             election.results = results_data
             election.save()
-
-            print(f"Results saved for election: {election.title}")  # Debugging
+            print(f"Results saved for election: {election.title}")  # Debug print
 
         self.message_user(request, "Election results have been calculated and saved.")
 
-    calculate_results.short_description = "Calculate and Save Election Results"
 
     def show_results(self, obj):
         if obj.results:
