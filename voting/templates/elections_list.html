@@ -1,45 +1,64 @@
 {% extends 'base.html' %}
-{% block title %}Ongoing Elections{% endblock %}
+{% block title %}All Elections{% endblock %}
 {% block content %}
 <div class="container mt-5">
   <div class="text-center mb-5">
     <h1 class="display-4 font-weight-bold text-primary">
       <i class="fas fa-vote-yea me-2"></i>
-      Ongoing Elections
+      All Elections
     </h1>
     <p class="lead text-muted">
-      Participate in the ongoing elections and make your voice heard!
+      View all elections, both ongoing and completed
     </p>
   </div>
 
-  <!-- Check if there are any elections -->
   {% if elections %}
   <div class="row">
     {% for election in elections %}
     <div class="col-md-6 mb-4">
       <div class="card border-0 shadow-lg h-100">
-        <div class="card-header bg-primary text-white py-3">
+        <div class="card-header {% if election.is_ongoing %}bg-primary{% else %}bg-secondary{% endif %} text-white py-3">
           <h5 class="mb-0">
             <i class="fas fa-calendar-alt me-2"></i>
             {{ election.title }}
+            <span class="badge {% if election.is_ongoing %}bg-success{% else %}bg-dark{% endif %} ms-2">
+              {% if election.is_ongoing %}Ongoing{% else %}Ended{% endif %}
+            </span>
           </h5>
         </div>
         <div class="card-body p-4">
           <p class="card-text text-muted mb-4">
             {{ election.description }}
           </p>
+          
+          {% if election.is_ongoing %}
+          <div class="mb-4">
+            <p class="text-muted mb-1">Time remaining to vote:</p>
+            <div id="timer-{{ election.election_id }}" 
+            class="countdown-timer fs-5 text-bold" 
+            data-end-date="{{ election.end_date|date:'c' }}"
+            data-election-id="{{ election.election_id }}">
+            Loading timer...
+       </div>
+          </div>
+          {% endif %}
+
           <div class="d-grid gap-2">
-            <a
-              href="{% url 'election_details' election.election_id %}"
-              class="btn btn-primary btn-lg rounded-pill"
-            >
-              <i class="fas fa-info-circle me-2"></i>
-              View Details & Vote
-            </a>
-            <a
-              href="{% url 'election_results' election.election_id %}"
-              class="btn btn-outline-secondary btn-lg rounded-pill"
-            >
+            {% if election.is_ongoing %}
+              <a href="{% url 'election_details' election.election_id %}" 
+                 class="btn btn-primary btn-lg rounded-pill">
+                <i class="fas fa-info-circle me-2"></i>
+                View Details & Vote
+              </a>
+            {% else %}
+              <button class="btn btn-secondary btn-lg rounded-pill" disabled>
+                <i class="fas fa-ban me-2"></i>
+                Voting Closed
+              </button>
+            {% endif %}
+            
+            <a href="{% url 'election_results' election.election_id %}"
+               class="btn {% if election.is_ongoing %}btn-outline-secondary{% else %}btn-outline-primary{% endif %} btn-lg rounded-pill">
               <i class="fas fa-chart-bar me-2"></i>
               View Results
             </a>
@@ -50,14 +69,12 @@
     {% endfor %}
   </div>
   {% else %}
-  <!-- No elections available -->
   <div class="alert alert-info text-center py-4" role="alert">
     <i class="fas fa-info-circle me-2"></i>
-    No ongoing elections at the moment. Please check back later.
+    No elections found.
   </div>
   {% endif %}
 
-  <!-- Display any messages, such as errors or confirmations -->
   {% if messages %}
   <div class="mt-4">
     {% for message in messages %}
@@ -69,4 +86,70 @@
   </div>
   {% endif %}
 </div>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    function updateTimer(timerElement, endDate, electionId) {
+      const now = new Date();
+      const diff = endDate - now;
+  
+      if (diff <= 0) {
+        timerElement.innerHTML = 'Voting has ended!';
+        const voteButton = timerElement.closest('.card-body').querySelector('.btn-primary');
+        if (voteButton) {
+          voteButton.disabled = true;
+          voteButton.innerHTML = '<i class="fas fa-ban me-2"></i>Voting Closed';
+          voteButton.classList.remove('btn-primary');
+          voteButton.classList.add('btn-secondary');
+        }
+  
+        // Send a request to update the election status
+        fetch(`/voter/election/${electionId}/update-status/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}' // Ensure CSRF token is included
+          },
+          body: JSON.stringify({})
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            console.log(`Election ${electionId} status updated to inactive.`);
+            location.reload()
+          } else {
+            console.error(`Failed to update election ${electionId} status:`, data.message);
+          }
+        })
+        .catch(error => {
+          console.error('Error updating election status:', error);
+        });
+  
+        // Return false to indicate the timer has ended
+        return false;
+      }
+  
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+  
+      timerElement.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+      return true; // Return true to indicate the timer is still running
+    }
+  
+    document.querySelectorAll('.countdown-timer').forEach(timerElement => {
+      const endDate = new Date(timerElement.dataset.endDate);
+      const electionId = timerElement.dataset.electionId;
+  
+      // Start the interval
+      const intervalId = setInterval(() => {
+        const isTimerRunning = updateTimer(timerElement, endDate, electionId);
+        if (!isTimerRunning) {
+          // If the timer has ended, clear the interval
+          clearInterval(intervalId);
+        }
+      }, 1000);
+    });
+  });
+  </script>
 {% endblock %}
