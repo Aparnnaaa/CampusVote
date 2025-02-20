@@ -12,6 +12,7 @@
     </p>
   </div>
 
+  <!-- Check if candidates are available -->
   {% if candidates %}
   <div class="row justify-content-center">
     <div class="col-md-10">
@@ -68,114 +69,4 @@
   </div>
   {% endif %}
 </div>
-{% endblock %}
-
-
-  <!-- Check if results are available -->
-  {% if election.results %}
-  <div class="row justify-content-center">
-    <div class="col-md-8 col-lg-6">
-      <div class="card border-0 shadow-lg">
-        <div class="card-header bg-primary text-white py-3">
-          <h5 class="mb-0">
-            <i class="fas fa-poll me-2"></i>
-            Election Results
-          </h5>
-        </div>
-        <div class="card-body p-4">
-          <ul class="list-group list-group-flush">
-            {% for candidate, votes in election.results.items %}
-            <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-              <span class="h6 mb-0">
-                <i class="fas fa-user me-2"></i>
-                {{ candidate }}
-              </span>
-              <span class="badge bg-success rounded-pill">
-                {{ votes }} votes
-              </span>
-            </li>
-            {% endfor %}
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Chart Section -->
-  <div class="row justify-content-center mt-5">
-    <div class="col-md-10">
-      <canvas id="electionChart"></canvas>
-    </div>
-  </div>
-
-  {% else %}
-  <!-- No results available -->
-  <div class="alert alert-info text-center py-4" role="alert">
-    <i class="fas fa-info-circle me-2"></i>
-    Results are not available yet. Please check back later.
-  </div>
-  {% endif %}
-</div>
-{% endblock %}
-
-{% block extra_scripts %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-  {% if election.results %}
-  // Get results from the Django context
-  const results = {{ election.results|safe }};
-  const labels = Object.keys(results); // Candidate names
-  const data = Object.values(results); // Vote counts
-
-  // Create the chart
-  const ctx = document.getElementById('electionChart').getContext('2d');
-  const electionChart = new Chart(ctx, {
-    type: 'bar', // You can use 'pie', 'doughnut', or 'line' instead of 'bar'
-    data: {
-      labels: labels,
-      datasets: [{
-        label: 'Vote Count',
-        data: data,
-        backgroundColor: [
-          'rgba(75, 192, 192, 0.2)',
-          'rgba(54, 162, 235, 0.2)',
-          'rgba(255, 206, 86, 0.2)',
-          'rgba(255, 99, 132, 0.2)',
-          'rgba(153, 102, 255, 0.2)',
-          'rgba(255, 159, 64, 0.2)'
-        ],
-        borderColor: [
-          'rgba(75, 192, 192, 1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(255, 99, 132, 1)',
-          'rgba(153, 102, 255, 1)',
-          'rgba(255, 159, 64, 1)'
-        ],
-        borderWidth: 1
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          position: 'top',
-        },
-        tooltip: {
-          callbacks: {
-            label: function(tooltipItem) {
-              return ` ${tooltipItem.raw} votes`;
-            }
-          }
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: true
-        }
-      }
-    }
-  });
-  {% endif %}
-</script>
 {% endblock %}
