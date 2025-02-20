@@ -241,4 +241,5 @@ def admin_election_progress(request, election_id):
 
 def election_results(request, election_id):
     election = get_object_or_404(Election, pk=election_id)
+    candidates = Candidate.objects.filter(election=election).order_by('-vote_count')  # Sort by vote count
     return render(request, 'election_results.html', {'election': election})
