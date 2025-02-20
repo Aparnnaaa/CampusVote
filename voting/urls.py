@@ -31,5 +31,4 @@ urlpatterns = [
     path('candidate/dashboard/',
          views.candidate_dashboard, name='candidate_dashboard'),
     path('candidate/dashboard/', views.candidate_dashboard, name='candidate_dashboard'),
-
 ]
