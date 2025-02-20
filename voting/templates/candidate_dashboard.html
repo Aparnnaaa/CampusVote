@@ -32,15 +32,15 @@
                     <!-- Profile Photo -->
                     <div class="text-center mb-4">
                         {% if candidate.photo %}
-                            <img src="{{ candidate.photo.url }}" 
-                                 class="img-thumbnail rounded-circle" 
-                                 alt="Profile Picture" 
-                                 style="width: 150px; height: 150px; object-fit: cover;">
-                        {% else %}
-                            <div class="bg-light rounded-circle d-inline-block p-4">
-                                <i class="fas fa-camera fa-3x text-secondary"></i>
-                            </div>
-                        {% endif %}
+                        <img src="{{ candidate.photo.url }}" 
+                             class="img-thumbnail rounded-circle" 
+                             alt="Profile Picture" 
+                             style="width: 150px; height: 150px; object-fit: cover;">
+                    {% else %}
+                        <div class="bg-light rounded-circle d-inline-block p-4">
+                            <i class="fas fa-camera fa-3x text-secondary"></i>
+                        </div>
+                    {% endif %}
                     </div>
 
                     <!-- Election Details -->

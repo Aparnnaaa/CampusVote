@@ -42,8 +42,8 @@ class ElectionAdmin(admin.ModelAdmin):
             # Use annotation to count related Vote objects for each candidate.
             candidates = Candidate.objects.filter(election=election).annotate(vote_total=Count('vote'))
             for candidate in candidates:
-                print(f"Candidate: {candidate.name}, Votes: {candidate.vote_total}")  # Debug print
-                results_data[candidate.name] = candidate.vote_total
+                print(f"Candidate: {candidate.candidate_id}, Votes: {candidate.vote_total}")  # Debug print
+                results_data[candidate.candidate_id] = candidate.vote_total
             election.results = results_data
             election.save()
             print(f"Results saved for election: {election.title}")  # Debug print

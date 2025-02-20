@@ -198,6 +198,7 @@ def candidate_dashboard(request):
 
     try:
         candidate = Candidate.objects.get(candidate_id=candidate_id)
+        print(candidate.photo)
     except ObjectDoesNotExist:
         messages.error(request, "Candidate not found")
         return redirect('candidate_login')
@@ -241,5 +242,15 @@ def admin_election_progress(request, election_id):
 
 def election_results(request, election_id):
     election = get_object_or_404(Election, pk=election_id)
-    candidates = Candidate.objects.filter(election=election).order_by('-vote_count')  # Sort by vote count
-    return render(request, 'election_results.html', {'election': election})
+
+    # Get results from election JSONField
+    results = election.results or {}  
+
+    # Get candidates and match votes from results
+    candidates = Candidate.objects.filter(election=election)
+    for candidate in candidates:
+        candidate.vote_count = results.get(str(candidate.candidate_id), 0)  # Default to 0 if not found
+
+    candidates = sorted(candidates, key=lambda c: c.vote_count, reverse=True)
+
+    return render(request, 'election_results.html', {'election': election, 'candidates': candidates})
