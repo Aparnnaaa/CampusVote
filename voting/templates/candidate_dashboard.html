@@ -68,7 +68,7 @@
                         {% csrf_token %}
                         
                         <!-- Manifesto Field -->
-                        <div class="mb-4">
+                        <div class="mb-4 d-flex gap-3">
                             <label for="id_manifesto" class="form-label">
                                 <i class="fas fa-file-alt me-2"></i>Manifesto
                             </label>
@@ -80,23 +80,46 @@
                             {% endif %}
                         </div>
 
-                        <!-- Photo Upload Field -->
-                        <div class="mb-4">
-                            <label for="id_photo" class="form-label">
-                                <i class="fas fa-camera me-2"></i>Profile Photo
-                            </label>
-                            <div class="input-group">
-                                {{ form.photo }}
-                                <label class="input-group-text btn btn-outline-secondary" for="id_photo">
-                                    Choose File
-                                </label>
-                            </div>
-                            {% if form.photo.errors %}
-                                <div class="text-danger mt-1">
-                                    {{ form.photo.errors }}
+                       <!-- Photo Upload Field -->
+                       <div class="mb-4">
+                        <label for="id_photo" class="form-label">
+                            <i class="fas fa-camera me-2"></i>Profile Photo
+                        </label>
+                        <div class="input-group align-items-center">
+                            <!-- Image Preview Container -->
+                            <div class="position-relative me-3">
+                                <!-- Current Photo -->
+                                <img id="image-preview" 
+                                     class="img-thumbnail rounded-circle" 
+                                     {% if candidate.photo %}src="{{ candidate.photo.url }}"{% endif %}
+                                     alt="Profile Preview" 
+                                     style="width: 150px; height: 150px; object-fit: cover;">
+                                
+                                <!-- Default Placeholder -->
+                                <div id="default-placeholder" class="{% if candidate.photo %}d-none{% endif %}">
+                                    <div class="bg-light rounded-circle d-inline-block p-4">
+                                        <i class="fas fa-camera fa-3x text-secondary"></i>
+                                    </div>
                                 </div>
-                            {% endif %}
+                            </div>
+                    
+                            <!-- File Input -->
+                            <div class="d-flex flex-column">
+                                <input type="file" 
+                                       class="form-control" 
+                                       id="id_photo" 
+                                       name="photo"
+                                       accept="image/*"
+                                       onchange="previewImage(event)">
+                                <small class="text-muted mt-2">Max size: 2MB. Formats: JPG, PNG</small>
+                            </div>
                         </div>
+                        {% if form.photo.errors %}
+                            <div class="text-danger mt-1">
+                                {{ form.photo.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
 
                         <!-- Submit Button -->
                         <button type="submit" class="btn btn-primary btn-lg w-100">
@@ -135,3 +158,4 @@
     }
 </style>
 {% endblock %}
+

@@ -65,38 +65,81 @@
   </head>
   <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <div class="container">
-        <a class="navbar-brand" href="#">CampusVote</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <a class="nav-link active" href="#">Ongoing Elections</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Candidate List</a>
-            </li>
-            
-          </ul>
-        </div>
-      </div>
-    </nav>
+  <!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container">
+    <a class="navbar-brand" href="{% url 'home' %}">CampusVote</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        {% if request.session.voter_id %}
+          <!-- Voter Links -->
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'voter_dashboard' %}">Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'elections_list' %}">Elections</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'voter_logout' %}">Logout</a>
+          </li>
+        {% elif request.session.candidate_id %}
+          <!-- Candidate Links -->
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'candidate_dashboard' %}">Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'candidate_logout' %}">Logout</a>
+          </li>
+        {% else %}
+          <!-- Public Links -->
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'voter_login' %}">Voter Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'candidate_login' %}">Candidate Login</a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
 
     <!-- Main Content -->
      <main>{% block content %}{% endblock %}</main>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    {% comment %} Script to display preview image in candidate Dashboard {% endcomment %}
+    <script>
+    function previewImage(event) {
+        const input = event.target;
+        const preview = document.getElementById('image-preview');
+        const placeholder = document.getElementById('default-placeholder');
+        
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                placeholder.style.display = 'none';
+            }
+            
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    </script>
   </body>
 </html>
