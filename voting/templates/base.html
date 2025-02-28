@@ -65,56 +65,59 @@
   </head>
   <body>
     <!-- Navbar -->
-  <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <div class="container">
-    <a class="navbar-brand" href="{% url 'home' %}">CampusVote</a>
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarNav"
-      aria-controls="navbarNav"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-    >
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        {% if request.session.voter_id %}
-          <!-- Voter Links -->
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'voter_dashboard' %}">Dashboard</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'elections_list' %}">Elections</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'voter_logout' %}">Logout</a>
-          </li>
-        {% elif request.session.candidate_id %}
-          <!-- Candidate Links -->
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'candidate_dashboard' %}">Dashboard</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'candidate_logout' %}">Logout</a>
-          </li>
-        {% else %}
-          <!-- Public Links -->
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'voter_login' %}">Voter Login</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'candidate_login' %}">Candidate Login</a>
-          </li>
-        {% endif %}
-      </ul>
-    </div>
-  </div>
-</nav>
-
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container">
+        <a class="navbar-brand" href="{% url 'home' %}">CampusVote</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <!-- Rules Link (Visible to Everyone) -->
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'rules' %}">Rules</a>
+            </li>
+    
+            {% if request.session.voter_id %}
+              <!-- Voter Links -->
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'voter_dashboard' %}">Dashboard</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'elections_list' %}">Elections</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'voter_logout' %}">Logout</a>
+              </li>
+            {% elif request.session.candidate_id %}
+              <!-- Candidate Links -->
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'candidate_dashboard' %}">Dashboard</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'candidate_logout' %}">Logout</a>
+              </li>
+            {% else %}
+              <!-- Public Links -->
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'voter_login' %}">Voter Login</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'candidate_login' %}">Candidate Login</a>
+              </li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </nav>
     <!-- Main Content -->
      <main>{% block content %}{% endblock %}</main>
 

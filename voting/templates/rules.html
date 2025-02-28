@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Election Rules{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h2><i class="fas fa-gavel"></i> Election Rules</h2>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                Please read and follow these rules carefully to ensure a fair election process.
+            </div>
+
+            <h4 class="mt-4">General Guidelines</h4>
+            <ol class="list-group list-group-numbered">
+                <li class="list-group-item">All voters must be registered students.</li>
+                <li class="list-group-item">Each voter can vote only once per position.</li>
+                <li class="list-group-item">Campaigning must follow college guidelines.</li>
+                <li class="list-group-item">No bribery or coercion is allowed.</li>
+                <li class="list-group-item">Results will be final once certified.</li>
+            </ol>
+
+            <h4 class="mt-4">Voter Responsibilities</h4>
+            <ul class="list-group">
+                <li class="list-group-item">Keep your login credentials secure.</li>
+                <li class="list-group-item">Verify your vote before submission.</li>
+                <li class="list-group-item">Report any suspicious activity immediately.</li>
+            </ul>
+
+            <h4 class="mt-4">Candidate Responsibilities</h4>
+            <ul class="list-group">
+                <li class="list-group-item">Maintain campaign decorum.</li>
+                <li class="list-group-item">Submit all required documents on time.</li>
+                <li class="list-group-item">Adhere to spending limits if applicable.</li>
+            </ul>
+
+            <div class="alert alert-warning mt-4">
+                <i class="fas fa-exclamation-triangle"></i>
+                Violation of these rules may result in disqualification or disciplinary action.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

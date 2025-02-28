@@ -19,6 +19,9 @@ from .utils import voter_required
 def home(request):
     return render(request, "home.html")
 
+def rules(request):
+    return render(request, 'rules.html')
+
 
 def voter_redirect(request):
     """
