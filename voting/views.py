@@ -12,6 +12,8 @@ from django.contrib.admin.views.decorators import staff_member_required
 from .models import Election, Candidate, Position, Voter, Vote
 from .forms import CandidateProfileForm
 from .utils import voter_required
+from django.core.mail import send_mail
+from django.http import HttpResponse
 
 # General Views
 
@@ -21,6 +23,16 @@ def home(request):
 
 def rules(request):
     return render(request, 'rules.html')
+
+# def test_email(request):
+#     send_mail(
+#         'Test Email',
+#         'This is a test email from Django.',
+#         'aakamshpm@gmail.com',
+#         ['aakpm09@gmail.com'],
+#         fail_silently=False,
+#     )
+#     return HttpResponse("Test email sent!")
 
 
 def voter_redirect(request):

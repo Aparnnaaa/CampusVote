@@ -5,6 +5,7 @@ urlpatterns = [
     # Home URL
     path('', views.home, name='home'),
     path('rules/', views.rules, name='rules'),
+    # path('test-email/', views.test_email, name='test_email'),
 
     # Voter URLs
     path('voter/', views.voter_redirect, name='voter_redirect'),

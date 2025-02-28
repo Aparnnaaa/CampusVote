@@ -14,6 +14,10 @@ class Voter(models.Model):
     is_verified = models.BooleanField(default=False)
     has_voted = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+    
+    def reset_password(self, new_password):
+        self.password = make_password(new_password)
+        self.save()
 
     def save(self, *args, **kwargs):
         if not self.pk:
@@ -27,6 +31,7 @@ class Voter(models.Model):
 class Candidate(models.Model):
     candidate_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
+    email = models.EmailField(unique=True, blank=True, null=True)
     manifesto = models.TextField()
     department = models.CharField(max_length=100)
     position = models.ForeignKey(
@@ -38,6 +43,10 @@ class Candidate(models.Model):
     vote_count = models.IntegerField(default=0)
 
     password = models.CharField(max_length=128)
+    
+    def reset_password(self, new_password):
+        self.password = make_password(new_password)
+        self.save()
 
     def save(self, *args, **kwargs):
         if not self.pk:
