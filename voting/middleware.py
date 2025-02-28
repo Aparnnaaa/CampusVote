@@ -21,3 +21,18 @@ class PreventAlreadyVotedMiddleware:
                     return render(request, 'already_voted.html')
 
         return self.get_response(request)
+
+class ResultsMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        return response
+
+    def process_template_response(self, request, response):
+        if 'candidates' in response.context_data:
+            for candidate in response.context_data['candidates']:
+                if hasattr(candidate, 'vote_count'):
+                    delattr(candidate, 'vote_count')
+        return response

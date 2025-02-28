@@ -165,17 +165,13 @@ def cast_vote(request, election_id):
         candidate = get_object_or_404(
             Candidate, pk=candidate_id, election=election)
 
-        # Check if the voter has already voted for this position
         if Vote.objects.filter(voter=voter, election=election, candidate__position=candidate.position).exists():
             messages.error(
                 request, f"You have already voted for the position: {candidate.position.title}.")
             return redirect('election_details', election_id=election_id)
 
-        # Record the vote and update the candidate's vote count
         Vote.objects.create(
             voter=voter, candidate=candidate, election=election)
-        candidate.vote_count = F('vote_count') + 1  # Safe atomic increment
-        candidate.save()
 
         messages.success(
             request, f"Your vote for {candidate.name} as {candidate.position.title} has been cast!")
@@ -185,7 +181,6 @@ def cast_vote(request, election_id):
         })
 
     return redirect('vote_form', election_id=election_id)
-
 # Candidate Views
 
 
@@ -268,16 +263,53 @@ def admin_election_progress(request, election_id):
 
 def election_results(request, election_id):
     election = get_object_or_404(Election, pk=election_id)
+    
+    if not election.results_calculated or not election.results:
+        return render(request, 'results_pending.html', {'election': election})
 
-    # Get results from election JSONField
-    results = election.results or {}
-
-    # Get candidates and match votes from results
-    candidates = Candidate.objects.filter(election=election)
-    for candidate in candidates:
-        candidate.vote_count = results.get(
-            str(candidate.candidate_id), 0)  # Default to 0 if not found
-
-    candidates = sorted(candidates, key=lambda c: c.vote_count, reverse=True)
-
-    return render(request, 'election_results.html', {'election': election, 'candidates': candidates})
+    # Group candidates by position and identify winners
+    positions = []
+    position_qs = Position.objects.filter(candidates__election=election).distinct()
+    
+    for position in position_qs:
+        candidates = []
+        max_votes = 0
+        
+        # Get all candidates for this position
+        position_candidates = Candidate.objects.filter(
+            election=election, 
+            position=position
+        )
+        
+        # Annotate with results from JSON
+        for candidate in position_candidates:
+            candidate_data = election.results.get(str(candidate.candidate_id), {})
+            votes = candidate_data.get('votes', 0)
+            
+            # Track max votes for winner determination
+            if votes > max_votes:
+                max_votes = votes
+                
+            candidates.append({
+                'name': candidate.name,
+                'votes': votes,
+                'is_winner': False,
+                'photo': candidate.photo.url if candidate.photo else None,
+                'manifesto': candidate.manifesto
+            })
+        
+        # Sort candidates and mark winners
+        candidates.sort(key=lambda x: x['votes'], reverse=True)
+        for candidate in candidates:
+            if candidate['votes'] == max_votes and max_votes > 0:
+                candidate['is_winner'] = True
+        
+        positions.append({
+            'title': position.title,
+            'candidates': candidates
+        })
+    
+    return render(request, 'election_results.html', {
+        'election': election,
+        'positions': positions
+    })

@@ -49,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'voting.middleware.PreventAlreadyVotedMiddleware',
+    'voting.middleware.ResultsMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 

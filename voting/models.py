@@ -55,6 +55,7 @@ class Election(models.Model):
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     is_active = models.BooleanField()
+    results_calculated = models.BooleanField(default=False)
     results = models.JSONField(null=True, blank=True)
 
     def __str__(self):

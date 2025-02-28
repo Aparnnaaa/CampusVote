@@ -31,7 +31,8 @@ class CandidateAdmin(admin.ModelAdmin):
 
 @admin.register(Election)
 class ElectionAdmin(admin.ModelAdmin):
-    list_display = ['title', 'start_date', 'end_date', 'is_active', 'show_results']
+    list_display = ['title', 'start_date',
+                    'end_date', 'is_active', 'show_results']
     search_fields = ['title']
     list_filter = ['is_active']
     readonly_fields = []  # Ensure 'results' is removed if not a model field
@@ -39,26 +40,30 @@ class ElectionAdmin(admin.ModelAdmin):
     def calculate_results(self, request, queryset):
         for election in queryset:
             results_data = {}
-            # Use annotation to count related Vote objects for each candidate.
-            candidates = Candidate.objects.filter(election=election).annotate(vote_total=Count('vote'))
+            candidates = Candidate.objects.filter(election=election).annotate(
+                vote_total=Count('vote')
+            )
+        
             for candidate in candidates:
-                print(f"Candidate: {candidate.candidate_id}, Votes: {candidate.vote_total}")  # Debug print
-                results_data[candidate.candidate_id] = candidate.vote_total
+                results_data[str(candidate.candidate_id)] = {
+                    'name': candidate.name,
+                    'votes': candidate.vote_total
+                }
+        
+            election.is_active = False
             election.results = results_data
+            election.results_calculated = True 
             election.save()
-            print(f"Results saved for election: {election.title}")  # Debug print
-
-        self.message_user(request, "Election results have been calculated and saved.")
-
+    
+        self.message_user(request, "Results calculated and published!")
 
     def show_results(self, obj):
         if obj.results:
-        # Assuming 'results' is a dictionary (JSONField in model)
+            # Assuming 'results' is a dictionary (JSONField in model)
             formatted_results = json.dumps(obj.results, indent=4)
         # Pass formatted_results as an argument to avoid format string issues
             return format_html("<pre>{}</pre>", formatted_results)
         return "Results not yet calculated"
-
 
     show_results.short_description = "Election Results"
 

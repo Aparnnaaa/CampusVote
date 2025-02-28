@@ -1,72 +1,90 @@
 {% extends 'base.html' %}
-{% block title %}Results - {{ election.title }}{% endblock %}
+
 {% block content %}
 <div class="container mt-5">
-  <div class="text-center mb-5">
-    <h1 class="display-4 font-weight-bold text-primary">
-      <i class="fas fa-chart-bar me-2"></i>
-      Results for {{ election.title }}
-    </h1>
-    <p class="lead text-muted">
-      View the latest results for this election.
-    </p>
-  </div>
-
-  <!-- Check if candidates are available -->
-  {% if candidates %}
-  <div class="row justify-content-center">
-    <div class="col-md-10">
-      <div class="card border-0 shadow-lg">
-        <div class="card-header bg-primary text-white py-3">
-          <h5 class="mb-0">
-            <i class="fas fa-poll me-2"></i>
-            Election Results
-          </h5>
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0"><i class="fas fa-trophy"></i> Official Results - {{ election.title }}</h3>
         </div>
-        <div class="card-body p-4">
-          <div class="list-group">
-            {% for candidate in candidates %}
-            <div class="list-group-item d-flex align-items-center justify-content-between p-3 shadow-sm rounded mb-3">
-              <div class="d-flex align-items-center">
-                {% if candidate.photo %}
-                <img src="{{ candidate.photo.url }}" alt="{{ candidate.name }}" class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
-                {% else %}
-                <div class="bg-secondary rounded-circle text-white d-flex justify-content-center align-items-center me-3" style="width: 60px; height: 60px;">
-                  <i class="fas fa-user fa-2x"></i>
+        
+        <div class="card-body">
+            <div class="alert alert-success mb-4">
+                <i class="fas fa-check-circle"></i>
+                Certified results calculated on {{ election.updated_at|date:"M d, Y H:i" }}
+            </div>
+
+            {% for position in positions %}
+            <div class="position-group mb-5">
+                <h4 class="position-title mb-3 p-2 bg-secondary text-white rounded">
+                    <i class="fas fa-bullhorn me-2"></i>{{ position.title }}
+                </h4>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 50%">Candidate</th>
+                                <th style="width: 30%">Votes</th>
+                                <th style="width: 20%">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                          {% for candidate in position.candidates %}
+                          <tr class="{% if candidate.is_winner %}table-success{% else %}table-default{% endif %}">
+                              <td>
+                                  <div class="d-flex align-items-center">
+                                      {% if candidate.photo %}
+                                      <img src="{{ candidate.photo }}" 
+                                           class="rounded-circle me-3" 
+                                           alt="{{ candidate.name }}" 
+                                           style="width: 50px; height: 50px; object-fit: cover;">
+                                      {% endif %}
+                                      <div>
+                                          {{ candidate.name }}
+                                          {% if candidate.is_winner %}
+                                          <i class="fas fa-crown ms-2 text-warning"></i>
+                                          {% endif %}
+                                     
+                                      </div>
+                                  </div>
+                              </td>
+                              <td>{{ candidate.votes }}</td>
+                              <td>
+                                  {% if candidate.is_winner %}
+                                  <span class="badge bg-success">Winner</span>
+                                  {% else %}
+                                  <span class="badge bg-secondary">Runner-up</span>
+                                  {% endif %}
+                              </td>
+                          </tr>
+                          {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
-                {% endif %}
-                <div>
-                  <h5 class="mb-1 text-primary">{{ candidate.name }}</h5>
-                  <p class="mb-0 text-muted">
-                    <i class="fas fa-briefcase me-1"></i>{{ candidate.position.title }} | 
-                    <i class="fas fa-building me-1"></i>{{ candidate.department }}
-                  </p>
-                  <p class="small text-muted">{{ candidate.manifesto }}</p>
-                </div>
-              </div>
-              <div class="text-center">
-                <h6 class="mb-0 text-success">
-                  <i class="fas fa-vote-yea me-1"></i>{{ candidate.vote_count }} votes
-                </h6>
-                {% if forloop.first %}
-                <span class="badge bg-warning text-dark mt-2">
-                  <i class="fas fa-trophy me-1"></i> Winner
-                </span>
-                {% endif %}
-              </div>
             </div>
             {% endfor %}
-          </div>
         </div>
-      </div>
     </div>
-  </div>
-  {% else %}
-  <!-- No candidates available -->
-  <div class="alert alert-info text-center py-4" role="alert">
-    <i class="fas fa-info-circle me-2"></i>
-    No candidates or results available yet. Please check back later.
-  </div>
-  {% endif %}
 </div>
+
+<style>
+    .position-group {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 15px;
+    }
+
+    .position-title {
+        font-size: 1.4rem;
+        font-weight: 600;
+    }
+
+    .fa-crown {
+        filter: drop-shadow(0 0 2px rgba(255,193,7,0.5));
+    }
+
+    .table-success {
+        background: linear-gradient(45deg, #f8fff9, #e8ffe9);
+    }
+</style>
 {% endblock %}
