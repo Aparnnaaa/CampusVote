@@ -14,7 +14,7 @@ class Voter(models.Model):
     is_verified = models.BooleanField(default=False)
     has_voted = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    
+
     def reset_password(self, new_password):
         self.password = make_password(new_password)
         self.save()
@@ -43,7 +43,7 @@ class Candidate(models.Model):
     vote_count = models.IntegerField(default=0)
 
     password = models.CharField(max_length=128)
-    
+
     def reset_password(self, new_password):
         self.password = make_password(new_password)
         self.save()
@@ -72,8 +72,7 @@ class Election(models.Model):
 
     @property
     def is_ongoing(self):
-        now = timezone.now()
-        return self.start_date <= now <= self.end_date
+        return self.is_active and (timezone.now() < self.end_date)
 
 
 class Vote(models.Model):
